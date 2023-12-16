@@ -4,6 +4,10 @@
 .httr-oauth
 .DS_Store
 
+# more data files
+*.zip
+*.tsv
+
 # working script
 old_scripts/
 *.docx
