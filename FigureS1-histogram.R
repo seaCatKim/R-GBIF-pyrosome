@@ -36,7 +36,8 @@ ggplot(d, aes(year, fill = basisOfRecord)) +
         legend.position = c(0.14, 0.87),
         plot.margin = unit(c(0, 0, 0, 0), "lines"))
 
-#save histogram in plots folder
+# save histogram in plots folder
+# change file extension for different files e.g., pdf, png
 ggsave("figures/gbif-histogram.jpg",
        width = 18, height = 12, units = "cm", dpi = 600)
 

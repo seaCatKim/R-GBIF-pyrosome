@@ -101,5 +101,6 @@ ggplot() +
         legend.key = element_blank(),  # removes gray box behind point in legend
         legend.key.size = unit(2,"point"))
 
+# change file extension for different files e.g., pdf, png
 ggsave("figures/gbif-yearcolor-facetrecord.jpg",
        height = 11.5, width =8.5, units = "cm", dpi = 600)
