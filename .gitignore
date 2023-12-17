@@ -8,6 +8,7 @@
 *.zip
 *.tsv
 *.png
+*.jpg
 *.pdf
 *.Rdata
 
