@@ -1,5 +1,5 @@
 # Code to produce figures in _Scientific Naturalist_ submission in _Ecology_
-## Title: Occurence of the pyrosome, _Pyrosoma atlanticum_, in Timor-Leste
+## Title: Opportunistic feeding by corals on the pyrosome, _Pyrosoma atlanticum_, in Timor-Leste
 
 Blooms of _Pyrosoma atlanticum_ were observed in late 2019 in Timor-Leste at two sites. Data on the occurence of pyrosomes globally was searched in the Global Biodiversity Information Facility using the _P. atlanticum_ taxonkey. The data search can be found [here](
 Blooms of _Pyrosoma atlanticum_ were observed in late 2019 in Timor-Leste at two sites. Data on the occurence of pyrosomes globally was searched in the Global Biodiversity Information Facility using the _P. atlanticum_ taxonkey. The data search can be found [here](https://doi.org/10.15468/dl.vv3adq).
