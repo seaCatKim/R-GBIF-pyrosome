@@ -20,7 +20,7 @@ library(rnaturalearth)
 # doi:  https://doi.org/10.15468/dl.vv3adq
 
 d <- occ_download_get('0005799-231002084531237',
-                      path = "data/") %>%
+                      path = "data/") |> # save to data directory
   occ_download_import() |>
   # Rename 4 to 4wd, f to Front, r to Rear
   mutate(basisOfRecord = recode(basisOfRecord,
