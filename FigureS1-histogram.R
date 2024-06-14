@@ -11,7 +11,8 @@ library(sf)
 # GBIF download request from search using the "Pyrosoma atlanticum" taxon key
 # doi:  https://doi.org/10.15468/dl.vv3adq
 
-d <- occ_download_get('0005799-231002084531237') %>%
+d <- occ_download_get('0005799-231002084531237',
+                      path = "data/") |> # save to data directory
   occ_download_import() |>
   # Rename recode basis of record factors
   mutate(basisOfRecord = recode(basisOfRecord,

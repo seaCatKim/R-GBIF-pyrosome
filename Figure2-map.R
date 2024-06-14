@@ -2,18 +2,25 @@
 ## Date: Oct 7, 2023
 ## Author: Catherine Kim
 
+# install.packages("rgbif")
 library(rgbif)
+# install.packages("ggplot2")
 library(ggplot2)
+# install.packages("dplyr")
 library(dplyr)
+# install.packages("purrr")
 library(purrr)
+# install.packages("sf")
 library(sf)
+# install.packages("rnaturalearthdata")
 library(rnaturalearth)
 
 #### Get pyrosome Global Biodiversity Information Facility (GBIF) download ####
 # GBIF download request from search using the "Pyrosoma atlanticum" taxon key
 # doi:  https://doi.org/10.15468/dl.vv3adq
 
-d <- occ_download_get('0005799-231002084531237') %>%
+d <- occ_download_get('0005799-231002084531237',
+                      path = "data/") |> # save to data directory
   occ_download_import() |>
   # Rename 4 to 4wd, f to Front, r to Rear
   mutate(basisOfRecord = recode(basisOfRecord,
