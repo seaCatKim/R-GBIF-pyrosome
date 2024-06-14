@@ -90,8 +90,8 @@ ggplot() +
   geom_hline(yintercept = -23.5, linetype = "dashed", color = "gray20") +
   annotate("text", x = -180, y = 30, label = "23.5", size = 2) +
   annotate("text", x = -180, y = -30, label = "-23.5", size = 2) +
-  labs(y = "", x = "") +
-  theme(text = element_text(size = 10),
+  labs(y = "", x = "", title = "Figure 2") +
+  theme(text = element_text(size = 14),
         panel.background = element_blank(),
         panel.border = element_rect(fill = NA),
         plot.margin = unit(c(0, 0, 0, -1), "lines"),
@@ -99,8 +99,10 @@ ggplot() +
         legend.position = c(.14, .42),
         legend.background = element_blank(),
         legend.key = element_blank(),  # removes gray box behind point in legend
-        legend.key.size = unit(2,"point"))
+        legend.key.size = unit(2,"point")) +
+  guides(color = guide_legend(override.aes = list(size = 2,
+                                                  alpha = 1) ) )
 
 # change file extension for different files e.g., pdf, png
-ggsave("figures/gbif-yearcolor-facetrecord.jpg",
-       height = 11.5, width =8.5, units = "cm", dpi = 600)
+ggsave("figures/gbif-yearcolor-facetrecord.pdf",
+       height = 22, width =18, units = "cm", dpi = 600)
