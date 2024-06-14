@@ -20,6 +20,12 @@ d <- occ_download_get('0005799-231002084531237') %>%
                                 "PRESERVED_SPECIMEN" = "Preserved Specimen"))
 names(d)  # check names
 
+# Basis of Record info
+# https://docs.gbif.org/course-data-use/en/basis-of-record.html
+# human observation = an output of human observation process eg. evidence of an occurrence taken from field notes or literature or a records of an occurrence without physical evidence nor evidence captured with a machine.
+# occurrence = ??
+# preserved specimen = a speciment that has been preserved, for example, a plant on an herbarium shett or a cataloged lot of fish in a jar.
+
 #### Histogram of observations by year ####
 ggplot(d, aes(year, fill = basisOfRecord)) +
   geom_histogram(binwidth = 1) +
@@ -49,3 +55,30 @@ range(d$decimalLongitude, na.rm = TRUE)
 
 no_time <- d[is.na(d$eventDate), ]
 no_time
+
+#### Histogram of observations by year without iNaturalist ####
+#d_noNat <-
+
+
+
+d |>
+  group_split(basisOfRecord) |>
+  map(group_by,institutionCode, year) |>
+  map(count) -> basis
+
+basis[[1]] |> View()
+basis[[3]]
+
+basis|> map(~ ggplot(.x, aes(x = year)) +
+        geom_bar(aes(fill = institutionCode)), stat = "identity")
+
+# fix IEO year
+
+
+d |>
+  filter(institutionCode != "iNaturalist") |>
+  group_by(basisOfRecord, year) |>
+  count() |>
+  ggplot(aes(x = year, y = n)) +
+  geom_bar(aes(fill = basisOfRecord), stat = "identity") +
+  scale_x_continuous(breaks = c(seq(1880, 2025, by=10)))
