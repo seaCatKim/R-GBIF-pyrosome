@@ -21,6 +21,26 @@ d <- occ_download_get('0005799-231002084531237',
                                 "PRESERVED_SPECIMEN" = "Preserved Specimen"))
 names(d)  # check names
 
+# clean time data
+d |>
+  # fill missing day/month/year
+  # first from eventDate, second from dateIdentified - same for IEO institution
+  mutate(year = case_when(is.na(year) ~ year(eventDate),
+                          .default = year),
+         month = case_when(is.na(month) ~ month(eventDate),
+                           .default = month),
+         day = case_when(is.na(day) ~ day(eventDate),
+                         .default = day),
+         year = case_when(is.na(year) ~ year(dateIdentified),
+                          .default = year),
+         month = case_when(is.na(month) ~ month(dateIdentified),
+                           .default = month),
+         day = case_when(is.na(day) ~ day(dateIdentified),
+                         .default = day)
+  )
+
+
+
 # Basis of Record info
 # https://docs.gbif.org/course-data-use/en/basis-of-record.html
 # human observation = an output of human observation process eg. evidence of an occurrence taken from field notes or literature or a records of an occurrence without physical evidence nor evidence captured with a machine.
@@ -58,8 +78,13 @@ no_time <- d[is.na(d$eventDate), ]
 no_time
 
 #### Histogram of observations by year without iNaturalist ####
-#d_noNat <-
-
+d |>
+  filter(institutionCode != "iNaturalist") |>
+  group_by(basisOfRecord, year) |>
+  count() |>
+  ggplot(aes(x = year, y = n)) +
+  geom_bar(aes(fill = basisOfRecord), stat = "identity") +
+  scale_x_continuous(breaks = c(seq(1880, 2025, by=10)))
 
 
 d |>
@@ -68,18 +93,54 @@ d |>
   map(count) -> basis
 
 basis[[1]] |> View()
-basis[[3]]
+basis[[2]] |> View()
+basis[[3]] |> View()
 
 basis|> map(~ ggplot(.x, aes(x = year)) +
         geom_bar(aes(fill = institutionCode)), stat = "identity")
 
 # fix IEO year
-
-
 d |>
-  filter(institutionCode != "iNaturalist") |>
-  group_by(basisOfRecord, year) |>
-  count() |>
-  ggplot(aes(x = year, y = n)) +
-  geom_bar(aes(fill = basisOfRecord), stat = "identity") +
-  scale_x_continuous(breaks = c(seq(1880, 2025, by=10)))
+  filter(is.na(year)) |> View()
+
+test <- d |>
+  mutate(year = case_when(is.na(year) ~ year(as.Date(eventDate))),
+         .default = year,
+         month = case_when(is.na(month) ~ month(as.Date(eventDate))),
+         .default = month,
+         day = case_when(is.na(day) ~ day(as.Date(eventDate))),
+         .default = day,
+         year = case_when(is.na(year) ~ year(as.Date(dateIdentified))),
+         .default = year)
+
+# for IEO Institution date Identified is the same as day/month/year column so filled in when there was no event date
+tt <- d|>
+  #filter(is.na(year)) |>
+  mutate(year = case_when(is.na(year) ~ year(eventDate),
+                          .default = year),
+         month = case_when(is.na(month) ~ month(eventDate),
+                           .default = month),
+         day = case_when(is.na(day) ~ day(eventDate),
+                           .default = day),
+         year = case_when(is.na(year) ~ year(dateIdentified),
+                          .default = year),
+         month = case_when(is.na(month) ~ month(dateIdentified),
+                          .default = month),
+         day = case_when(is.na(day) ~ day(dateIdentified),
+                           .default = day)
+         )
+
+year(as.Date(d$eventDate))
+
+test|>
+  filter(is.na(year)) |> View()
+
+# add missing insitution codes
+d |>
+  filter(institutionCode == "") |>
+  unique() |>
+  View()
+  mutate(year = case_when())
+  filter(institutionCode == "IEO")
+
+
