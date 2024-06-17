@@ -20,7 +20,7 @@ beh <- read.csv("data/Behau-4closestpixels.csv") |>
          year = year(time),
          month = month(time),
          day = day(time),
-         Site = "Beh'au") |> # add site name
+         Site = "Be'hau") |> # add site name
   drop_na() |>
   filter(year == 2019) # only look at relevant year
 plot(beh$time, beh$CHL)
@@ -51,8 +51,12 @@ ggplot(chl, aes(x = time, y = CHL)) +
   labs(x = "", y = "Chlorophyll a [mg m-3]") +
   scale_x_date(limits = as.Date(c("2019-01-01", "2019-12-14")),
                date_breaks = "1 month",
-               date_labels = "%b")
-ggsave("plots/chl-a.jpg",
+               date_labels = "%b") +
+  # lines on dates where pyrosomes were observed
+  geom_vline(xintercept = as.Date("2019-09-24"), lty = 2, color = "gray40") +
+  geom_vline(xintercept = as.Date("2019-10-8"), lty = 2, color = "gray40")
+
+ggsave("plots/chl-a.pdf",
        width = 12, height = 8, units = "cm", dpi = 600)
 
 # Summary stats
