@@ -53,10 +53,12 @@ ggplot(chl, aes(x = time, y = CHL)) +
                date_breaks = "1 month",
                date_labels = "%b") +
   # lines on dates where pyrosomes were observed
+  # Beloi
   geom_vline(xintercept = as.Date("2019-09-24"), lty = 2, color = "gray40") +
+  # Be'hau
   geom_vline(xintercept = as.Date("2019-10-8"), lty = 2, color = "gray40")
 
-ggsave("plots/chl-a.pdf",
+ggsave("plots/chl-a.jpg",
        width = 12, height = 8, units = "cm", dpi = 600)
 
 # Summary stats
