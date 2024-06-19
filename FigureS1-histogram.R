@@ -6,6 +6,9 @@ library(rgbif)
 library(ggplot2)
 library(dplyr)
 library(sf)
+library(lubridate)
+library(purrr)
+library(patchwork)
 
 #### Get pyrosome Global Biodiversity Information Facility (GBIF) download ####
 # GBIF download request from search using the "Pyrosoma atlanticum" taxon key
@@ -22,7 +25,7 @@ d <- occ_download_get('0005799-231002084531237',
 names(d)  # check names
 
 # clean time data
-d |>
+d <- d |>
   # fill missing day/month/year
   # first from eventDate, second from dateIdentified - same for IEO institution
   mutate(year = case_when(is.na(year) ~ year(eventDate),
@@ -48,21 +51,23 @@ d |>
 # preserved specimen = a speciment that has been preserved, for example, a plant on an herbarium shett or a cataloged lot of fish in a jar.
 
 #### Histogram of observations by year ####
-ggplot(d, aes(year, fill = basisOfRecord)) +
+raw_dat <- ggplot(d, aes(year, fill = basisOfRecord)) +
   geom_histogram(binwidth = 1) +
   theme_bw() +
   labs(x = "Year", y = "") +
   scale_x_continuous(breaks = c(seq(1880, 2025, by=10))) +
-  scale_fill_discrete(name = "Basis of Record") +
-  #                    breaks = c("HUMAN_OBSERVATION", "OCCURRENCE", "PRESERVED_SPECIMEN"),
-  #                    labels = c("Human Observation", "Occurence", "Preserved Specimen")) +
+  scale_fill_brewer(name = "Basis of Record",
+                    palette = "Dark2") +
+#  scale_fill_viridis_d() +
   theme(text = element_text(size=10),
         legend.title = element_text(size = 10),
-        axis.text.x = element_text(size = 10),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank(),
         panel.grid = element_blank(),
-        legend.position = c(0.14, 0.87),
+        legend.position = c(0.2, 0.6),
         plot.margin = unit(c(0, 0, 0, 0), "lines"))
-
+raw_dat
 # save histogram in plots folder
 # change file extension for different files e.g., pdf, png
 ggsave("figures/gbif-histogram.jpg",
@@ -78,14 +83,28 @@ no_time <- d[is.na(d$eventDate), ]
 no_time
 
 #### Histogram of observations by year without iNaturalist ####
-d |>
+no_inat <- d |>
   filter(institutionCode != "iNaturalist") |>
-  group_by(basisOfRecord, year) |>
-  count() |>
-  ggplot(aes(x = year, y = n)) +
-  geom_bar(aes(fill = basisOfRecord), stat = "identity") +
-  scale_x_continuous(breaks = c(seq(1880, 2025, by=10)))
-
+  # group_by(basisOfRecord, year) |>
+  # count() |>
+  ggplot(aes(x = year, fill = basisOfRecord)) +
+  geom_histogram(binwidth = 1) +
+ # geom_bar(aes(fill = basisOfRecord), stat = "identity") +
+  scale_x_continuous(breaks = c(seq(1880, 2025, by=10))) +
+  scale_fill_brewer(name = "Basis of Record",
+                      palette = "Dark2") +
+  theme_bw() +
+  guides(fill = "none") +
+  theme(text = element_text(size=10),
+        legend.title = element_text(size = 10),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = c(0.14, 0.87),
+        plot.margin = unit(c(0, 0, 0, 0), "lines")) +
+  labs(y = "", x = "Year")
+no_inat
 
 d |>
   group_split(basisOfRecord) |>
@@ -119,9 +138,42 @@ d |>
 # 350f00a7-db1f-4133-bc07-71de716339da - USGS - Rockfish Recruitment and Ecosystem Assessment Survey
 
 # assign each code with project code
+d <- d |>
+  mutate(institutionCode = case_when(
+    datasetKey == "8e9974a4-12e2-475f-9aec-5abdf24a1f50" |
+      datasetKey == "25e3e8f1-86ee-440c-adfc-8e63759a6505" ~ "OFB-CRNS-MNHN",
+    datasetKey == "7ebef267-9d72-4c21-a276-cc84281a8590" ~ "NatureMapr",
+    datasetKey == "79e21918-887b-4b40-9305-abc5f57494dd" ~ "CMS-UAlg",
+    datasetKey == "a0a4d131-f53f-43b2-a1ba-254473b8a006" |
+    datasetKey == "350f00a7-db1f-4133-bc07-71de716339da" ~ "USGS",
+    datasetKey == "27c84cf2-c04f-444a-9884-9d499533c4ba" |
+      datasetKey == "266628c1-56a0-46cb-b136-3b77dbc32268" ~ "FMI",
+    datasetKey == "7c0cd863-8b81-4937-84f9-2f596fd3fa79" ~ "SPC",
+    institutionCode == "CSIRO, Australia" ~ "CSIRO",
+    .default = institutionCode
+  ))
 
-View()
-  mutate(year = case_when())
-  filter(institutionCode == "IEO")
+standardized <- d |>
+  group_by(day, month, year, institutionCode, basisOfRecord) |>
+  count() |>
+  ggplot(aes(x = year, fill = basisOfRecord)) +
+  geom_histogram(binwidth = 1) +
+  scale_x_continuous(breaks = c(seq(1880, 2025, by=10))) +
+  scale_fill_brewer(name = "Basis of Record",
+                      palette = "Dark2") +
+  guides(fill = "none") +
+  theme_bw() +
+  theme(text = element_text(size=10),
+        legend.title = element_text(size = 10),
+        axis.text.x = element_text(size = 7),
+        panel.grid = element_blank(),
+        legend.position = c(0.14, 0.87),
+        plot.margin = unit(c(0, 0, 0, 0), "lines")) +
+  labs(y = "", x = "Year")
+standardized
 
-
+# patchwork plots together
+raw_dat / no_inat / standardized +
+  plot_annotation(tag_levels = 'a')
+ggsave("figures/raw_noinat_standardized.jpg",
+       height = 14, width = 12, units = "cm")
