@@ -65,12 +65,6 @@ beloi <- st_point(c(124.6, -8.2))
 
 tl_pts <- st_sfc(behau, beloi, crs = "WGS84")
 
-# plot pyrosome data in tropics
-ggplot() +
-  geom_sf(data = worldmap, fill = "gray85",  color = NA) +
-  geom_sf(data = trop, aes(color = countryCode), size = 1.5, alpha = 0.5)
-# NA country looks to be off the coast of Africa
-
 # break into time bins present after 2010, 1990-2010, pre 1990
 dt <- d_sf |>
   mutate(time = if_else(year >= 2010, "2010-2023",
