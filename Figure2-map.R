@@ -91,7 +91,7 @@ ggplot() +
   geom_hline(yintercept = -23.5, linetype = "dashed", color = "gray20") +
   annotate("text", x = -180, y = 30, label = "23.5", size = 2) +
   annotate("text", x = -180, y = -30, label = "-23.5", size = 2) +
-  labs(y = "", x = "") +
+  labs(y = "", x = "") + # , title = "Figure 2") + # for pdf version of figure
   theme(text = element_text(size = 14),
         panel.background = element_blank(),
         panel.border = element_rect(fill = NA),
@@ -105,5 +105,5 @@ ggplot() +
                                                   alpha = 1) ) )
 
 # change file extension for different files e.g., pdf, png
-ggsave("figures/fig2-gbif-yearcolor-facetrecord.jpg",
+ggsave("figures/Figure2.jpg",
        height = 22, width =18, units = "cm", dpi = 600)
