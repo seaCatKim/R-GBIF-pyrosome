@@ -75,7 +75,7 @@ ggplot() +
 dt <- d_sf |>
   mutate(time = if_else(year >= 2010, "2010-2023",
                         ifelse(year >= 1990 & year < 2010, "1990-2009",
-                               ifelse(year < 1990, "1880-1990", "No Date")
+                               ifelse(year < 1990, "1880-1989", "No Date")
                         )
   )
   )
@@ -86,8 +86,8 @@ ggplot() +
   geom_sf(data = dt, aes(color=time), alpha = 0.3, size = 0.8) +
   scale_color_discrete(type = RColorBrewer::brewer.pal(4, "Dark2"), # dark pal for visiiblity
                        name = "",
-                       breaks = c("1880-1990", "1990-2009", "2010-2023", NA),
-                       labels = c("1880-1990", "1990-2009", "2010-2023", "No Date")
+                       breaks = c("1880-1989", "1990-2009", "2010-2023", NA),
+                       labels = c("1880-1989", "1990-2009", "2010-2023", "No Date")
   ) +
   facet_grid(rows = vars(basisOfRecord), switch = "y") +
   # add observataion locations in Timor-Leste
@@ -97,7 +97,7 @@ ggplot() +
   geom_hline(yintercept = -23.5, linetype = "dashed", color = "gray20") +
   annotate("text", x = -180, y = 30, label = "23.5", size = 2) +
   annotate("text", x = -180, y = -30, label = "-23.5", size = 2) +
-  labs(y = "", x = "", title = "Figure 2") +
+  labs(y = "", x = "") +
   theme(text = element_text(size = 14),
         panel.background = element_blank(),
         panel.border = element_rect(fill = NA),
@@ -111,5 +111,5 @@ ggplot() +
                                                   alpha = 1) ) )
 
 # change file extension for different files e.g., pdf, png
-ggsave("figures/gbif-yearcolor-facetrecord.pdf",
+ggsave("figures/fig2-gbif-yearcolor-facetrecord.jpg",
        height = 22, width =18, units = "cm", dpi = 600)
