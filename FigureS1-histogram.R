@@ -70,8 +70,8 @@ raw_dat <- ggplot(d, aes(year, fill = basisOfRecord)) +
 raw_dat
 # save histogram in plots folder
 # change file extension for different files e.g., pdf, png
-ggsave("figures/gbif-histogram.jpg",
-       width = 18, height = 12, units = "cm", dpi = 600)
+# ggsave("figures/gbif-histogram.jpg",
+#       width = 18, height = 12, units = "cm", dpi = 600)
 
 # range of event date
 str(d)
@@ -111,6 +111,7 @@ d |>
   map(group_by,institutionCode, year) |>
   map(count) -> basis
 
+# check what each group looks like
 basis[[1]] |> View()
 basis[[2]] |> View()
 basis[[3]] |> View()
@@ -175,5 +176,6 @@ standardized
 # patchwork plots together
 raw_dat / no_inat / standardized +
   plot_annotation(tag_levels = 'a')
-ggsave("figures/raw_noinat_standardized.jpg",
+
+ggsave("figures/FigureS1.jpg",
        height = 14, width = 12, units = "cm")
