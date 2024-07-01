@@ -22,7 +22,7 @@ library(rnaturalearth)
 d <- occ_download_get('0005799-231002084531237',
                       path = "data/") |> # save to data directory
   occ_download_import() |>
-  # Rename 4 to 4wd, f to Front, r to Rear
+  # Rename basis of record categories
   mutate(basisOfRecord = recode(basisOfRecord,
                                 "HUMAN_OBSERVATION" = "Human Observation",
                                 "OCCURRENCE" = "Occurence",
@@ -65,7 +65,7 @@ beloi <- st_point(c(124.6, -8.2))
 
 tl_pts <- st_sfc(behau, beloi, crs = "WGS84")
 
-# break into time bins present after 2010, 1990-2010, pre 1990
+# break into time bins present after 2010, 1990-2009, pre 1989
 dt <- d_sf |>
   mutate(time = if_else(year >= 2010, "2010-2023",
                         ifelse(year >= 1990 & year < 2010, "1990-2009",
@@ -74,7 +74,7 @@ dt <- d_sf |>
   )
   )
 
-# facet by basis of record
+# map of pyrosome observations, facet by basis of record
 ggplot() +
   geom_sf(data = worldmap, fill = "gray85",  color = NA) +
   geom_sf(data = dt, aes(color=time), alpha = 0.3, size = 0.8) +
