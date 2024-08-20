@@ -13,6 +13,8 @@
 ## Values from graph: v(t): value vs. time
 
 library(tidyverse)
+library(patchwork)
+library(zoo)
 
 # read in Behau and Beloi Chl a data
 beh <- read.csv("data/Behau-4closestpixels.csv") |>
@@ -22,8 +24,6 @@ beh <- read.csv("data/Behau-4closestpixels.csv") |>
          day = day(time),
          Site = "Be'hau") |> # add site name
   drop_na()
-# |>
-#   filter(year == 2019) # only look at relevant year
 plot(beh$time, beh$CHL)
 
 bel <- read.csv("data/Beloi.csv") |>
@@ -33,12 +33,13 @@ bel <- read.csv("data/Beloi.csv") |>
          day = day(time),
          Site = "Beloi") |> # add site name
   drop_na()
-# |>
-#   filter(year == 2019)
 plot(bel$time, bel$CHL)
 
-# combine into one dataframe for plot
-chl <- rbind(beh, bel)
+# filter 2019 CHL data and combine into one dataframe for plot
+chl <- rbind(beh %>% filter(year == 2019),
+             bel %>% filter(year == 2019))
+range(chl$CHL)
+summary(chl)
 
 ggplot(chl, aes(x = time, y = CHL)) +
   geom_point(color = "palegreen3") +
@@ -64,17 +65,116 @@ ggsave("plots/chl-a.jpg",
        width = 12, height = 8, units = "cm", dpi = 600)
 
 # Summary stats
-# annual site average
+# 2019 site average
 chl |>
   group_by(Site) |>
   summarize(ave = mean(CHL), SD = sd(CHL))
 
-# monthly average
+# 2019 monthly average
 chl_ave <- chl |>
   group_by(month, as.factor(Site))|>
   summarize(ave = mean(CHL), SD = sd(CHL), SE = SD/sqrt(n()))
 chl_ave
 
+# monthly average from Sept 1997
+l_chl <- list(beloi = bel, behau = beh)
+
+l_chl %>%
+  map(~ggplot(.x, aes(x = time, y = CHL) ) +
+        geom_point())
+
+(l_chl_monthly <- l_chl |>
+  map(group_by, month, year, Site)|>
+  map(summarize, ave = mean(CHL), SD = sd(CHL), SE = SD/sqrt(n())) %>%
+  map(mutate, time = paste(year, month, sep = "-"),
+        time = parse_date_time(time, "ym")) %>%
+  map(arrange, time)
+  )
+
+chl_monthly <- bind_rows((l_chl_monthly))
+
+chl_monthly %>%
+  ggplot(aes(x = time, y = ave)) +
+        geom_line() +
+  facet_wrap(vars(Site), nrow = 2, strip.position = "top",
+             scales = "free_y") +
+  theme_bw()
+
+plot_chl <- chl_monthly %>%
+  ggplot(aes(x = time, y = ave, color = Site)) +
+  geom_line() +
+  theme_bw()
+
+# annual average
+(chl_annual <- l_chl |>
+    map(group_by, year, Site)|>
+    map(summarize, ave = mean(CHL), SD = sd(CHL), SE = SD/sqrt(n())) %>%
+    map(mutate, time = parse_date_time(year, "y")) %>%
+    bind_rows()
+)
+
+(plot_chl_yr <- chl_annual %>%
+  ggplot(aes(x = time, y = ave, color = Site)) +
+  geom_line() +
+  theme_bw())
+
+# 90 day/3 month moving window average
+(chl_roll <- l_chl_monthly %>%
+  map(mutate, rolling_chl = rollmean(ave, 3)) ) # DOES NOT WORK?
+
+# using daily data
+l_chl %>%
+  map(mutate, rolling = rollmean(CHL, 30, fill = NA)) %>%
+  bind_rows()
+
+# using summarized monthly data
+chl_roll <- chl_monthly %>%
+  group_by(Site) %>%
+  group_split(Site) %>%
+  map(mutate, roll_chl = rollmean(ave, 3, fill = NA)) %>%  # WORKS?
+  bind_rows()
+
+(plot_chl_roll <- chl_roll %>%
+    ggplot(aes(x = time, y = roll_chl, color = Site)) +
+    geom_line() +
+    theme_bw())
+
+
+# could subtract the climatological mean from the summarized monty-year data
+# calculating the monthly anomaly
+# do correlation with SOI with this monthly anomaly
+# correlation assuming uniform distribution
+
+# average month though all years
+(month_ave <- l_chl %>%
+  map(group_by, month, Site) %>%
+  map(summarize, month_ave = mean(CHL))) %>%
+  map(ungroup)
+
+month_ave %>%
+  map(~ggplot(.x, aes( x = month, y = month_ave)) +
+        geom_line())
+
+(chl_anomaly <- map2(l_chl_monthly, month_ave, left_join) %>%
+  map(mutate, anomaly = ave - month_ave) %>%
+  bind_rows())
+
+chl_anomaly_roll <- chl_anomaly %>%
+  group_by(Site) %>%
+  group_split(Site) %>%
+  map(mutate, roll_anomaly = rollmean(anomaly, 3, fill = NA)) %>%
+  bind_rows()
+
+(plot_chl_anomaly <- ggplot(chl_anomaly, aes(time, anomaly, color = Site)) +
+  geom_line() +
+  theme_bw())
+
+(plot_chl_anomaly <- ggplot(chl_anomaly_roll, aes(time, roll_anomaly, color = Site)) +
+    geom_line() +
+    theme_bw())
+
+# try 75% or 95% percentile of monthly data to average
+# take raw time series, 95% for jan the first year
 
 ## Southern Oscillation Index data
 ## downloaded from https://www.cpc.ncep.noaa.gov/data/indices/soi on 20 August 2024
@@ -86,7 +186,6 @@ anomaly <- read.csv("data/SOI-sealevelpress-anomaly.csv",
 l_soi <- list(soi = soi, anomaly = anomaly) # store in a list to map functions
 
 # reformat data
-
 (soi_long <- l_soi %>%
     map(pivot_longer, JAN:DEC, names_to = "MONTH", values_to = "SOI") %>%
     map(mutate, DATE = paste(YEAR, MONTH, sep = "-"),
@@ -100,10 +199,78 @@ soi_long %>%
         theme_bw())
 
 # subset matching data with CHL period starting Sept 1997
-soi_long %>%
+(plot_soi <- soi_long %>%
   map(filter, DATE >= "1997-09-01") %>%
   map(~ggplot(.x, aes(x = DATE, y = SOI)) +
-        geom_point() +
+      #  geom_point() +
         geom_line() +
-        theme_bw())
+        theme_bw()
+      # +
+      #   labs(title = deparse(substitute(.))))
+      )
+)
+plot_soi$anomaly
 
+# calculate 3 month rolling mean
+soi_roll <- soi_long %>%
+  map(mutate, rolling_SOI = rollmean(SOI, 3, fill = NA))
+
+(plot_soi_roll <- soi_roll %>%
+    map(filter, DATE >= "1997-09-01") %>%
+    map(~ggplot(.x, aes(x = DATE, y = rolling_SOI)) +
+          #  geom_point() +
+          geom_line() +
+          theme_bw()
+        # +
+        #   labs(title = deparse(substitute(.))))
+    )
+)
+plot_soi_roll$anomaly
+
+plot_soi$anomaly / plot_soi_roll$anomaly
+
+
+plot_chl / plot_soi$anomaly
+
+plot_chl_yr / plot_soi$anomaly
+
+plot_chl_roll / plot_soi$anomaly
+plot_chl_roll / plot_soi_roll$anomaly
+plot(soi_roll$rolling_SOI, ch)
+
+plot_soi_roll$anomaly / plot_chl_anomaly
+
+# join soi rolling average and CHL anomaly
+chl_soi <- left_join(chl_anomaly_roll, soi_roll$anomaly, by = join_by(time == DATE))
+
+ggplot(chl_soi, aes(roll_anomaly, rolling_SOI)) +
+  geom_point() +
+  facet_grid(vars(Site)) +
+  geom_smooth(method = "lm") +
+  theme_bw()
+
+ggplot(chl_soi %>% filter(roll_anomaly < 0.25), # filter outliers
+       aes(roll_anomaly, rolling_SOI)) +
+  geom_point() +
+  facet_grid(vars(Site)) +
+  geom_smooth(method = "lm") +
+  theme_bw()
+
+l_chl_soi <- chl_soi %>%
+  group_by(Site) %>%
+  group_split(Site)
+# tried filtering for rolling chl anomaly < 0.25 and did not make a difference
+
+# behau
+shapiro.test(l_chl_soi[[1]]$roll_anomaly)
+shapiro.test(l_chl_soi[[1]]$rolling_SOI)
+
+cor.test(l_chl_soi[[1]]$roll_anomaly, l_chl_soi[[1]]$rolling_SOI, method = "kendall")
+cor.test(l_chl_soi[[1]]$roll_anomaly, l_chl_soi[[1]]$rolling_SOI, method = "spearman")
+
+# beloi
+shapiro.test(l_chl_soi[[2]]$roll_anomaly)
+shapiro.test(l_chl_soi[[2]]$rolling_SOI)
+
+cor.test(l_chl_soi[[2]]$roll_anomaly, l_chl_soi[[2]]$rolling_SOI, method = "kendall")
+cor.test(l_chl_soi[[2]]$roll_anomaly, l_chl_soi[[2]]$rolling_SOI, method = "spearman")
