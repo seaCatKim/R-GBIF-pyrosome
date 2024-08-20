@@ -21,8 +21,9 @@ beh <- read.csv("data/Behau-4closestpixels.csv") |>
          month = month(time),
          day = day(time),
          Site = "Be'hau") |> # add site name
-  drop_na() |>
-  filter(year == 2019) # only look at relevant year
+  drop_na()
+# |>
+#   filter(year == 2019) # only look at relevant year
 plot(beh$time, beh$CHL)
 
 bel <- read.csv("data/Beloi.csv") |>
@@ -31,8 +32,9 @@ bel <- read.csv("data/Beloi.csv") |>
          month = month(time),
          day = day(time),
          Site = "Beloi") |> # add site name
-  drop_na() |>
-  filter(year == 2019)
+  drop_na()
+# |>
+#   filter(year == 2019)
 plot(bel$time, bel$CHL)
 
 # combine into one dataframe for plot
@@ -73,4 +75,35 @@ chl_ave <- chl |>
   summarize(ave = mean(CHL), SD = sd(CHL), SE = SD/sqrt(n()))
 chl_ave
 
+
+## Southern Oscillation Index data
+## downloaded from https://www.cpc.ncep.noaa.gov/data/indices/soi on 20 August 2024
+soi <- read.csv("data/SOI-sealevelpress-standardized.csv",
+                na.strings = "-999.9")
+anomaly <- read.csv("data/SOI-sealevelpress-anomaly.csv",
+                    na.strings = "-999.9")
+
+l_soi <- list(soi = soi, anomaly = anomaly) # store in a list to map functions
+
+# reformat data
+
+(soi_long <- l_soi %>%
+    map(pivot_longer, JAN:DEC, names_to = "MONTH", values_to = "SOI") %>%
+    map(mutate, DATE = paste(YEAR, MONTH, sep = "-"),
+               DATE = parse_date_time(DATE, "ym"))
+  )
+
+# plot all data
+soi_long %>%
+  map(~ggplot(.x, aes(x = DATE, y = SOI)) +
+        geom_point() +
+        theme_bw())
+
+# subset matching data with CHL period starting Sept 1997
+soi_long %>%
+  map(filter, DATE >= "1997-09-01") %>%
+  map(~ggplot(.x, aes(x = DATE, y = SOI)) +
+        geom_point() +
+        geom_line() +
+        theme_bw())
 
