@@ -11,6 +11,7 @@
 *.jpg
 *.pdf
 *.Rdata
+*.nc
 
 # working script
 old_scripts/
