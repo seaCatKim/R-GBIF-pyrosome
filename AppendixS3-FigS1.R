@@ -26,6 +26,8 @@ beh <- read.csv("data/Behau-4closestpixels.csv") |>
   drop_na()
 plot(beh$time, beh$CHL)
 
+ggplot(beh, aes(x = time, y = CHL)) + geom_line()
+
 bel <- read.csv("data/Beloi.csv") |>
   mutate(time = as.Date(time),
          year = year(time),
@@ -197,6 +199,9 @@ soi_long %>%
   map(~ggplot(.x, aes(x = DATE, y = SOI)) +
         geom_point() +
         theme_bw())
+
+# save standardized as csv
+#write.csv(soi_long[["soi"]], "data/soi-std.csv")
 
 # subset matching data with CHL period starting Sept 1997
 (plot_soi <- soi_long %>%
