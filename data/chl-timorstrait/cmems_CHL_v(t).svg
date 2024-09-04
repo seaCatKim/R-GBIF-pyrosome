@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg 
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        viewBox="0 0 250 90"
+        fill="none"
+      >
+        <style type="text/css">
+          path, line { 
+            stroke: black;
+            stroke-width: .5px;
+          }
+          path.le-data-line {
+            stroke-linejoin: round;
+            stroke-linecap: round;
+          }
+          text { 
+            fill: gray;
+            font-family: sans-serif;
+            font-size: 11px;
+          }
+          .le-axis-tick line {
+            stroke: lightgray;
+          }
+          path.le-axis-split-fill {
+            stroke: none;
+            fill: white;
+          }
+          .le-graph-thumb {
+            fill: darkred;
+            fill-opacity: 0.5;
+          }
+          .le-axis-tick.overlapping text {
+            display: none;
+          }
+        </style>
+      <g transform="translate(0.5, 0.5)"><g class="le-graph-base"><g class="le-axis-ticks-x"><g class="le-axis-tick" style="opacity: 1;" transform="translate(41, 0)"><line y1="84" y2="4"></line><text y="4" dx="3" dy="8" text-anchor="start" style="opacity: 0;">19</text></g><g class="le-axis-tick" style="opacity: 1;" transform="translate(119, 0)"><line y1="84" y2="4"></line><text y="4" dx="3" dy="8" text-anchor="start">26</text></g><g class="le-axis-tick" style="opacity: 1;" transform="translate(197, 0)"><line y1="84" y2="4"></line><text y="4" dx="3" dy="8" text-anchor="start">2 Sep 2024</text></g></g><g class="le-axis-ticks-y"><g class="le-axis-tick overlapping" style="opacity: 0.3;" transform="translate(0, 77)"><line x1="8" x2="242"></line><text x="242" dx="0" dy="-2" text-anchor="end">0.2</text></g><g class="le-axis-tick" style="opacity: 1;" transform="translate(0, 62)"><line x1="8" x2="242"></line><text x="242" dx="0" dy="-2" text-anchor="end">0.25</text></g><g class="le-axis-tick" style="opacity: 1;" transform="translate(0, 48)"><line x1="8" x2="242"></line><text x="242" dx="0" dy="-2" text-anchor="end">0.3</text></g><g class="le-axis-tick" style="opacity: 1;" transform="translate(0, 33)"><line x1="8" x2="242"></line><text x="242" dx="0" dy="-2" text-anchor="end">0.35</text></g></g><line class="le-axis-x le-graph-axis-line" x1="8" x2="242" y1="84" y2="84"></line><line class="le-axis-y le-graph-axis-line" x1="8" x2="8" y1="4" y2="84"></line><g class="le-axis-split-x le-axis-split" transform="translate(8, 84) rotate(90)" style="opacity: 0;"><path class="le-axis-split-fill" d="M-2,0L2,-4L2,0L-2,4"></path><path class="le-axis-split" d="M-2,0L2,-4M-2,4L2,0"></path></g><g class="le-axis-split-y le-axis-split" transform="translate(8, 77)" style="opacity: 1;"><path class="le-axis-split-fill" d="M-2,0L2,-4L2,0L-2,4"></path><path class="le-axis-split" d="M-2,0L2,-4M-2,4L2,0"></path></g></g><g class="le-graph-data"><path class="le-data-line" clip-path="url(#graph-clip-q04oox3k4hc)" style="opacity: 1; stroke: black;" d="M8,48.31041076040093L19.11764705882353,56.3655970367113L30.235294117647058,30L41.35294117647059,68.42478803339787L52.470588235294116,52.10318833828152L63.58823529411765,68.05435877900392L74.70588235294117,61.07765721181583L85.8235294117647,61.283602580854044L96.94117647058823,77.65479663967804L108.05882352941177,79.0909090909091L119.1764705882353,65.0130952280056L130.29411764705884,61.067365198859896L141.41176470588235,56.33886408050577L152.52941176470586,74.5531167828384L163.6470588235294,54.83361120011076L174.76470588235293,52.4626555039824L185.88235294117646,52.51563966259554L197,54.73323122694055"></path></g><g class="le-graph-thumbs-x"><g style="opacity: 1;" class="le-graph-thumb"><rect class="le-graph-thumb-segment" clip-path="url(#graph-clip-q04oox3k4hc)" y="4" height="80" x="66.5" width="1"></rect></g></g><g class="le-graph-thumbs-y"></g><g class="le-graph-axis-labels"><text class="le-axis-label le-axis-label-x" x="242" y="84" dx="0" dy="-4" text-anchor="end">t</text><text class="le-axis-label le-axis-label-y" x="8" y="4" dx="3" dy="8" text-anchor="start">chl</text></g><clipPath class="cm-data-clip" id="graph-clip-q04oox3k4hc"><rect x="8" y="4" width="234" height="80" fill="rgba(255,255,255,0.3)"></rect></clipPath></g></svg>
