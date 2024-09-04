@@ -63,8 +63,7 @@ ggplot(chl, aes(x = time, y = CHL)) +
   # Be'hau
   geom_vline(xintercept = as.Date("2019-10-8"), lty = 2, color = "gray40")
 
-ggsave("plots/chl-a.jpg",
-       width = 12, height = 8, units = "cm", dpi = 600)
+# ggsave("plots/chl-a.jpg", width = 12, height = 8, units = "cm", dpi = 600)
 
 # Summary stats
 # 2019 site average
@@ -120,7 +119,7 @@ plot_chl <- chl_monthly %>%
   geom_line() +
   theme_bw())
 
-# 90 day/3 month moving window average
+###### 90 day/3 month moving window average ######
 (chl_roll <- l_chl_monthly %>%
   map(mutate, rolling_chl = rollmean(ave, 3)) ) # DOES NOT WORK?
 
@@ -139,14 +138,10 @@ chl_roll <- chl_monthly %>%
 (plot_chl_roll <- chl_roll %>%
     ggplot(aes(x = time, y = roll_chl, color = Site)) +
     geom_line() +
+    labs(title = "3 month rolling average") +
     theme_bw())
 
-
-# could subtract the climatological mean from the summarized monty-year data
-# calculating the monthly anomaly
-# do correlation with SOI with this monthly anomaly
-# correlation assuming uniform distribution
-
+#### Remove seasonal variation #####
 # average month though all years
 (month_ave <- l_chl %>%
   map(group_by, month, Site) %>%
@@ -157,28 +152,49 @@ month_ave %>%
   map(~ggplot(.x, aes( x = month, y = month_ave)) +
         geom_line())
 
-(chl_anomaly <- map2(l_chl_monthly, month_ave, left_join) %>%
-  map(mutate, anomaly = ave - month_ave) %>%
-  bind_rows())
+(chl_detrend <- map2(l_chl_monthly, month_ave, left_join) %>%
+  map(mutate, detrend = ave - month_ave))
 
-chl_anomaly_roll <- chl_anomaly %>%
+chl_detend_roll <- chl_detrend %>%
+  bind_rows() %>%
   group_by(Site) %>%
   group_split(Site) %>%
-  map(mutate, roll_anomaly = rollmean(anomaly, 3, fill = NA)) %>%
+  map(mutate, roll_detrend = rollmean(detrend, 3, fill = NA)) %>%
   bind_rows()
 
-(plot_chl_anomaly <- ggplot(chl_anomaly, aes(time, anomaly, color = Site)) +
-  geom_line() +
-  theme_bw())
-
-(plot_chl_anomaly <- ggplot(chl_anomaly_roll, aes(time, roll_anomaly, color = Site)) +
+(plot_chl_anomaly <- ggplot(chl_detrend_roll, aes(time, roll_anomaly, color = Site)) +
     geom_line() +
     theme_bw())
+
+# could subtract the climatological mean from the summarized, de-trended (seasonal) monthly data calculating the monthly anomaly
+# do correlation with SOI with this monthly anomaly
+# correlation assuming uniform distribution
+(clim_mean <- chl_detrend %>%
+    map(ungroup) %>%
+    map(mutate, clim_mean = mean(month_ave)) %>%
+    map(mutate, anomaly = detrend - clim_mean) )
+
+clim_mean %>%
+  map(~ggplot(.x, aes(x = time, y = anomaly)) +
+        geom_line() +
+        ggtitle(paste(.x$Site[1], "Anomaly")))
+
+clim_mean_roll <- clim_mean %>%
+  map(mutate, roll_anomaly = rollmean(anomaly, 3, fill = NA))
+
+(plot_roll_chl <- clim_mean_roll %>%
+    map(~ggplot(.x, aes(x = time, y = roll_anomaly)) +
+          geom_line() +
+          ggtitle(paste(.x$Site[1], "3 Month Anomaly"))))
 
 # try 75% or 95% percentile of monthly data to average
 # take raw time series, 95% for jan the first year
 
-## Southern Oscillation Index data
+#### CHL data from Timor Strait ####
+ts <- read_csv("data/chl-timorstrait/cmems_obs-oc_glo_bgc-plankton_nrt_l3-multi-4km_P1D_1725414362075.csv")
+
+
+#### Southern Oscillation Index data ####
 ## downloaded from https://www.cpc.ncep.noaa.gov/data/indices/soi on 20 August 2024
 soi <- read.csv("data/SOI-sealevelpress-standardized.csv",
                 na.strings = "-999.9")
@@ -245,8 +261,12 @@ plot(soi_roll$rolling_SOI, ch)
 
 plot_soi_roll$anomaly / plot_chl_anomaly
 
-# join soi rolling average and CHL anomaly
-chl_soi <- left_join(chl_anomaly_roll, soi_roll$anomaly, by = join_by(time == DATE))
+# 3 month rolling soi and chl climatological anomaly seasonally detrended
+plot_soi_roll$soi / plot_roll_chl$beloi / plot_roll_chl$behau
+
+#### Correlations ####
+# join soi rolling average and CHL anomaly - mean without seasonal signal
+chl_soi <- left_join(chl_detrend_roll, soi_roll$anomaly, by = join_by(time == DATE))
 
 ggplot(chl_soi, aes(roll_anomaly, rolling_SOI)) +
   geom_point() +
@@ -270,6 +290,9 @@ l_chl_soi <- chl_soi %>%
 shapiro.test(l_chl_soi[[1]]$roll_anomaly)
 shapiro.test(l_chl_soi[[1]]$rolling_SOI)
 
+qqnorm(l_chl_soi[[1]]$roll_anomaly)
+qqnorm(l_chl_soi[[1]]$rolling_SOI)
+
 cor.test(l_chl_soi[[1]]$roll_anomaly, l_chl_soi[[1]]$rolling_SOI, method = "kendall")
 cor.test(l_chl_soi[[1]]$roll_anomaly, l_chl_soi[[1]]$rolling_SOI, method = "spearman")
 
@@ -277,5 +300,52 @@ cor.test(l_chl_soi[[1]]$roll_anomaly, l_chl_soi[[1]]$rolling_SOI, method = "spea
 shapiro.test(l_chl_soi[[2]]$roll_anomaly)
 shapiro.test(l_chl_soi[[2]]$rolling_SOI)
 
+qqnorm(l_chl_soi[[2]]$roll_anomaly)
+qqnorm(l_chl_soi[[2]]$rolling_SOI)
+
 cor.test(l_chl_soi[[2]]$roll_anomaly, l_chl_soi[[2]]$rolling_SOI, method = "kendall")
 cor.test(l_chl_soi[[2]]$roll_anomaly, l_chl_soi[[2]]$rolling_SOI, method = "spearman")
+
+##### rolling soi and rolling chl anomaly, monthly mean, seasonally detrended, climatological mean
+(climchl_soi <- clim_mean_roll %>% map(left_join, soi_roll$anomaly, by = c("time" = "DATE")))
+
+plot(climchl_soi$behau$roll_anomaly, climchl_soi$behau$rolling_SOI)
+
+## plot rolling soi vs chl anomaly
+climchl_soi %>%
+  map(~  ggplot(data = .x, aes(rolling_SOI, roll_anomaly)) +
+        geom_point() +
+        geom_smooth(method = "lm") +
+        theme_bw() +
+        ggtitle(paste(.x$Site[1], "Correlation" )))
+
+## correlation test
+## beloi
+shapiro.test(climchl_soi[[1]]$roll_anomaly)  # not normal
+shapiro.test(climchl_soi[[1]]$rolling_SOI)
+
+qqnorm(climchl_soi[[1]]$roll_anomaly)  # not normal
+qqnorm(climchl_soi[[1]]$rolling_SOI)
+
+cor.test(climchl_soi[[1]]$roll_anomaly, climchl_soi[[1]]$rolling_SOI, method = "kendall")
+cor.test(climchl_soi[[1]]$roll_anomaly, climchl_soi[[1]]$rolling_SOI, method = "spearman")
+
+## behau
+shapiro.test(climchl_soi[[2]]$roll_anomaly)  # not normal
+shapiro.test(climchl_soi[[2]]$rolling_SOI)
+
+qqnorm(climchl_soi[[2]]$roll_anomaly)  # not normal
+qqnorm(climchl_soi[[2]]$rolling_SOI)
+
+cor.test(climchl_soi[[2]]$roll_anomaly, climchl_soi[[2]]$rolling_SOI, method = "kendall")
+cor.test(climchl_soi[[2]]$roll_anomaly, climchl_soi[[2]]$rolling_SOI, method = "spearman")
+
+## beloi
+shapiro.test(climchl_soi[[2]]$roll_anomaly)  # not normal
+shapiro.test(climchl_soi[[2]]$rolling_SOI)
+
+qqnorm(climchl_soi[[2]]$roll_anomaly)  # not normal
+qqnorm(climchl_soi[[2]]$rolling_SOI)
+
+cor.test(climchl_soi[[2]]$roll_anomaly, climchl_soi[[2]]$rolling_SOI, method = "kendall")
+cor.test(climchl_soi[[2]]$roll_anomaly, climchl_soi[[2]]$rolling_SOI, method = "spearman")
