@@ -155,20 +155,38 @@ month_ave %>%
 (chl_detrend <- map2(l_chl_monthly, month_ave, left_join) %>%
   map(mutate, detrend = ave - month_ave))
 
-chl_detend_roll <- chl_detrend %>%
+chl_detrend_roll <- chl_detrend %>%
   bind_rows() %>%
   group_by(Site) %>%
   group_split(Site) %>%
   map(mutate, roll_detrend = rollmean(detrend, 3, fill = NA)) %>%
   bind_rows()
 
-(plot_chl_anomaly <- ggplot(chl_detrend_roll, aes(time, roll_anomaly, color = Site)) +
+(plot_chl_detrend <- ggplot(chl_detrend_roll, aes(time, roll_detrend, color = Site)) +
     geom_line() +
     theme_bw())
+
+(plot_chl_col <- ggplot(chl_detrend_roll, aes(as.Date( time), roll_detrend)) +
+  geom_col(data = chl_detend_roll %>% filter(roll_detrend <= 0), fill= "red") +
+  geom_col(data = chl_detend_roll %>% filter(roll_detrend >= 0), fill= "blue") +
+  facet_wrap(vars(Site), nrow = 2, scales = "free") +
+  theme_bw() +
+  labs(x = "", y = "Chlorophyll-a [mg m3]") +
+  theme(panel.grid = element_blank(),
+        axis.text.x = element_text(angle = 45, vjust = 1, hjust = .8)) +
+ # xlim(as.Date(c("1997-09-01", "2024-08-01")))
+  scale_x_date(name = "",
+               date_breaks = "1 year",
+               date_labels = "%Y",
+               limits = as.Date(c("1997-09-01", "2024-08-01"))))
 
 # could subtract the climatological mean from the summarized, de-trended (seasonal) monthly data calculating the monthly anomaly
 # do correlation with SOI with this monthly anomaly
 # correlation assuming uniform distribution
+chl_detrend %>% map(summary)
+
+chl_detrend %>% filter()
+
 (clim_mean <- chl_detrend %>%
     map(ungroup) %>%
     map(mutate, clim_mean = mean(month_ave)) %>%
@@ -186,6 +204,10 @@ clim_mean_roll <- clim_mean %>%
     map(~ggplot(.x, aes(x = time, y = roll_anomaly)) +
           geom_line() +
           ggtitle(paste(.x$Site[1], "3 Month Anomaly"))))
+
+ggplot(bind_clim_mean_roll, aes(time, roll_anomaly)) +
+  geom_col() +
+  facet_wrap(vars(Site))
 
 # try 75% or 95% percentile of monthly data to average
 # take raw time series, 95% for jan the first year
@@ -232,6 +254,8 @@ soi_long %>%
 )
 plot_soi$anomaly
 
+
+
 # calculate 3 month rolling mean
 soi_roll <- soi_long %>%
   map(mutate, rolling_SOI = rollmean(SOI, 3, fill = NA))
@@ -246,6 +270,19 @@ soi_roll <- soi_long %>%
         #   labs(title = deparse(substitute(.))))
     )
 )
+
+(plot_soiroll_col <- soi_roll$soi %>%
+    ggplot(aes(as.Date(DATE), SOI)) +
+    geom_col(data = soi_long$soi %>% filter(SOI <= 0, DATE >= as.Date("1997-09-01")), fill = "red") +
+    geom_col(data = soi_long$soi %>% filter(SOI >= 0, DATE >= as.Date("1997-09-01")), fill = "blue") +
+    theme_bw()) +
+  scale_x_date(name = "",
+               date_breaks = "1 year",
+               date_labels = "%Y",
+               limits = as.Date(c("1997-09-01", "2024-08-01")))
+
+plot_soiroll_col / plot_chl_col
+
 plot_soi_roll$anomaly
 
 plot_soi$anomaly / plot_soi_roll$anomaly
@@ -259,7 +296,7 @@ plot_chl_roll / plot_soi$anomaly
 plot_chl_roll / plot_soi_roll$anomaly
 plot(soi_roll$rolling_SOI, ch)
 
-plot_soi_roll$anomaly / plot_chl_anomaly
+plot_soi_roll$anomaly / plot_chl_detrend
 
 # 3 month rolling soi and chl climatological anomaly seasonally detrended
 plot_soi_roll$soi / plot_roll_chl$beloi / plot_roll_chl$behau
