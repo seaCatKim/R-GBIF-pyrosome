@@ -12,6 +12,7 @@
 *.pdf
 *.Rdata
 *.nc
+*.svg
 
 # working script
 old_scripts/
