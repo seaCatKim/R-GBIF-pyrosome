@@ -67,15 +67,15 @@ ggplot(chl, aes(x = time, y = CHL)) +
 
 # Summary stats
 # 2019 site average
-chl, position = "jitter" |>
+chl |>
   group_by(Site) |>
   summarize(ave = mean(CHL), SD = sd(CHL))
 
-# 2019 monthly aver, position = "jitterage
-chl_ave <- chl, position = "jitter" |>
-  group_by(month, as.factor(Site), position = "jitter")|>
+# 2019 monthly average
+chl_ave <- chl |>
+  group_by(month, as.factor(Site))|>
   summarize(ave = mean(CHL), SD = sd(CHL), SE = SD/sqrt(n()))
-chl_, position = "jitterave
+chl_ave
 
 # monthly average from Sept 1997
 l_chl <- list(beloi = bel, behau = beh)
@@ -94,9 +94,9 @@ l_chl |>
 
 chl_monthly <- bind_rows((l_chl_monthly))
 
-chl_monthly, position = "jitter" |>
-  ggplot(aes(x = time, y = ave), position = "jitter") +
-        geom_line(, position = "jitter") +
+chl_monthly |>
+  ggplot(aes(x = time, y = ave)) +
+        geom_line() +
   facet_wrap(vars(Site), nrow = 2, strip.position = "top",
              scales = "free_y") +
   theme_bw()
@@ -107,17 +107,17 @@ plot_chl <- chl_monthly |>
   theme_bw()
 
 # annual average
-(chl_annual <- l_chl, position = "jitter" |>
+(chl_annual <- l_chl |>
     map(group_by, year, Site)|>
     map(summarize, ave = mean(CHL), SD = sd(CHL), SE = SD/sqrt(n())) |>
     map(mutate, time = parse_date_time(year, "y")) |>
-    bind_row, position = "jitters()
+    bind_rows()
 )
 
 (plot_chl_yr <- chl_annual |>
   ggplot(aes(x = time, y = ave, color = Site)) +
   geom_line() +
-  theme_bw(, position = "jitter"))
+  theme_bw())
 
 ###### 90 day/3 month moving window average ######
 (chl_roll <- l_chl_monthly |>
@@ -130,22 +130,22 @@ l_chl |>
 
 # using summarized monthly data
 chl_roll <- chl_monthly |>
-  group_by(Site), position = "jitter" |>
-  group_split(Site), position = "jitter" |>
-  map(mutate, roll_chl = rollmean(ave, 3, fill = NA)) |>  # WOR, position = "jitterKS?
+  group_by(Site) |>
+  group_split(Site) |>
+  map(mutate, roll_chl = rollmean(ave, 3, fill = NA)) |>  # WORRKS
   bind_rows()
 
-(plot_chl_roll <- chl_roll, position = "jitter" |>
+(plot_chl_roll <- chl_roll |>
     ggplot(aes(x = time, y = roll_chl, color = Site)) +
     geom_line() +
-    labs(title = "3 month rolling average", position = "jitter") +
-    theme_bw, position = "jitter())
+    labs(title = "3 month rolling average") +
+    theme_bw)
 
 #### Remove seasonal variation #####
 # average month though all years
 (month_ave <- l_chl |>
   map(group_by, month, Site) |>
-  map(summarize, month_ave = mean(CHL))), position = "jitter" |>
+  map(summarize, month_ave = mean(CHL))) |>
   map(ungroup)
 
 month_ave |>
@@ -170,22 +170,22 @@ chl_detrend_roll <- chl_detrend |>
   geom_col(data = chl_detrend_roll |> filter(roll_detrend <= 0), fill= "red") +
   geom_col(data = chl_detrend_roll |> filter(roll_detrend >= 0), fill= "blue") +
   facet_wrap(vars(Site), nrow = 2, scales = "free") +
-  theme_bw(, position = "jitter") +
+  theme_bw() +
   labs(x = "", y = "Chlorophyll-a [mg m3]") +
   theme(panel.grid = element_blank(),
-        axis.text.x = element_text(angle = 45, vjust = 1, hjust = .8), position = "jitter") +
- # xlim(as.Date(c("1997-09-01", "2024-08-01", position = "jitter)))
-  scale_x_date(name = , position = "jitter",
+        axis.text.x = element_text(angle = 45, vjust = 1, hjust = .8)) +
+ # xlim(as.Date(c("1997-09-01", "2024-08-01")))
+  scale_x_date(name = ,
                date_breaks = "1 year",
                date_labels = "%Y",
-               limits = as.Date(c("1997-09-01", "2024-08-01"), position = "jitter")))
+               limits = as.Date(c("1997-09-01", "2024-08-01"))))
 
 # could subtract the climatological mean from the summarized, de-trended (seasonal) monthly data calculating the monthly anomaly
 # do correlation with SOI with this monthly anomaly
-# correlation assuming uniform distribut, position = "jitterion
+# correlation assuming uniform distribution
 chl_detrend |> map(summary)
 
-(clim_mean <- chl_detrend, position = "jitter" |>
+(clim_mean <- chl_detrend |>
     map(ungroup) |>
     map(mutate, clim_mean = mean(detrend)) |>
     map(mutate, anomaly = detrend - clim_mean) )
@@ -203,17 +203,19 @@ clim_mean_roll <- clim_mean |>
           ggplot(.x, aes(x = as.Date(time), y = roll_anomaly)) +
           geom_line(color = "darkgreen", linewidth = .6) +
           geom_smooth(method = "lm", se = FALSE, color = "black") +
-        #  stat_regline_equation(label.x.npc = "centre", label.y.npc = "top", position = "jitter") +
-        #  stat_cor(label.x.npc = "center", label.y.npc = "top", position = "jitter") +
+        #  stat_regline_equation(label.x.npc = "centre", label.y.npc = "top") +
+        #  stat_cor(label.x.npc = "center", label.y.npc = "top"") +
           theme_bw() +
           labs(y = "Chlorophyll-a [mg m3]") +
           theme(panel.grid = element_blank(),
-                axis.text.x = element_text(angle = 90, vjust = .5, hjust = 0)) +
+                axis.text.x = element_text(angle = 90, vjust = .5, hjust = 0),
+                text = element_text(size = 14),
+                axix.title.y = element_text(size = 8)) +
           # xlim(as.Date(c("1997-09-01", "2024-08-01")))
           scale_x_date(name = "",
                        date_breaks = "1 year",
                        date_labels = "%Y",
-                       limits = as.Date(c("1997-09-01", "2024-08-01")))
+                       limits = as.Date(c(NA, NA)))
         )
   )
 
@@ -224,24 +226,25 @@ map(1:length(plot_roll_chl), function(x, idx) {
 }
 )
 
+# plot by faceting sites
 bind_clim_mean_roll <- clim_mean_roll |> bind_rows()
 
 ggplot(bind_clim_mean_roll, aes(time, roll_anomaly)) +
   geom_col() +
   facet_wrap(vars(Site))
 
-# try 75% or 95% percentile of monthly data to aver, position = "jitterage
+# try 75% or 95% percentile of monthly data to average
 # take raw time series, 95% for jan the first year
 
 #### CHL data from Timor Strait ####
-ts <- read_csv("data/chl-timorstrait/cmems_obs-oc_glo_bgc-plankton_nrt_l3-multi-4km_P1D_1725414362075.cs, position = "jitterv, position = "jitter)
+ts <- read_csv("data/chl-timorstrait/cmems_obs-oc_glo_bgc-plankton_nrt_l3-multi-4km_P1D_1725414362075.cs")
 
 
 #### Southern Oscillation Index data ####
 ## downloaded from https://www.cpc.ncep.noaa.gov/data/indices/soi on 20 August 2024
 soi <- read.csv("data/SOI-sealevelpress-standardized.csv",
                 na.strings = "-999.9")
-anomaly <- read.csv("data/SOI-sealevelpress-anomaly.cs, position = "jitterv",
+anomaly <- read.csv("data/SOI-sealevelpress-anomaly.csv",
                     na.strings = "-999.9")
 
 l_soi <- list(soi = soi, anomaly = anomaly) # store in a list to map functions
@@ -250,7 +253,7 @@ l_soi <- list(soi = soi, anomaly = anomaly) # store in a list to map functions
 (soi_long <- l_soi |>
     map(pivot_longer, JAN:DEC, names_to = "MONTH", values_to = "SOI") |>
     map(mutate, DATE = paste(YEAR, MONTH, sep = "-"),
-               DATE = parse_date_time(DATE, "ym, position = "jitter)), position = "jitter"
+               DATE = parse_date_time(DATE, "ym"))
   )
 
 # plot all data
@@ -265,17 +268,15 @@ soi_long |>
 # subset matching data with CHL period starting Sept 1997
 (plot_soi <- soi_long |>
   map(filter, DATE >= "1997-09-01") |>
-  map(~ggplot(.x, aes(x = DATE, y = SOI), position = "jitter") +
+  map(~ggplot(.x, aes(x = DATE, y = SOI)) +
       #  geom_point() +
         geom_line() +
-        theme_b, position = "jitterw()
-      , position = "jitter# +
+        theme_bw()
+      # +
       #   labs(title = deparse(substitute(.))))
       )
 )
 plot_soi$anomaly
-
-
 
 # calculate 3 month rolling mean
 soi_roll <- soi_long |>
@@ -286,23 +287,39 @@ soi_roll <- soi_long |>
     map(~ggplot(.x, aes(x = DATE, y = rolling_SOI)) +
           #  geom_point() +
           geom_line() +
-          theme_bw()
+          theme_bw() +
+          theme(text = element_text(size = 14)) +
+          labs(x = "")
         # +
         #   labs(title = deparse(substitute(.))))
     )
 )
 
 (plot_soiroll_col <- soi_roll$soi |>
-    ggplot(aes(as.Date(DATE), SOI)) +
-    geom_col(data = soi_long$soi |> filter(SOI <= 0, DATE >= as.Date("1997-09-01")), fill = "red") +
-    geom_col(data = soi_long$soi |> filter(SOI >= 0, DATE >= as.Date("1997-09-01")), fill = "blue") +
-    theme_bw()) +
+    mutate(DATE = as.Date(DATE)) |>
+    filter(DATE > as.Date("1997-09-01") & DATE < as.Date("2024-06-01")) |>
+    ggplot(aes(as.Date(DATE), rolling_SOI)) +
+    # geom_col gives uneven column widths, something about pixels
+    geom_segment(data = soi_long$soi |> filter(SOI <= 0),
+                 aes(xend = as.Date(DATE), y = 0, yend = SOI), color = "red") +
+    geom_segment(data = soi_long$soi |> filter(SOI >= 0),
+                 aes(xend = as.Date(DATE), y = 0, yend = SOI), color = "blue") +
+    theme_bw() +
+  theme(text = element_text(size = 14),
+        axis.text.x = element_text(angle = 90, vjust = 0.5),
+        panel.grid = element_blank()) +
+  labs(x = "") +
   scale_x_date(name = "",
                date_breaks = "1 year",
                date_labels = "%Y",
-               limits = as.Date(c("1997-09-01", "2024-08-01")))
+               limits = (c(as.Date("1997-09-01"), as.Date("2024-06-01"))))
+               )
 
-plot_soiroll_col / plot_chl_col
+plot_soiroll_col / plot_meanroll_behau / plot_meanroll_beloi +
+  plot_layout(axes = "collect") +
+  plot_annotation(tag_levels = "A")
+
+
 
 plot_soi_roll$anomaly
 
@@ -351,12 +368,12 @@ shapiro.test(l_chl_soi[[1]]$rolling_SOI)
 qqnorm(l_chl_soi[[1]]$roll_anomaly)
 qqnorm(l_chl_soi[[1]]$rolling_SOI)
 
-cor.test(l_chl_soi[[1]]$roll_anomaly, l_chl_soi[[1]]$rolling_SOI, method = "kendal, position = "jitterl")
+cor.test(l_chl_soi[[1]]$roll_anomaly, l_chl_soi[[1]]$rolling_SOI, method = "kendall")
 cor.test(l_chl_soi[[1]]$roll_anomaly, l_chl_soi[[1]]$rolling_SOI, method = "spearman")
 
 # beloi
 shapiro.test(l_chl_soi[[2]]$roll_anomaly)
-shapiro.test(l_chl_soi[[2]]$rolling_SO, position = "jitterI)
+shapiro.test(l_chl_soi[[2]]$rolling_SOI)
 
 qqnorm(l_chl_soi[[2]]$roll_anomaly)
 qqnorm(l_chl_soi[[2]]$rolling_SOI)
