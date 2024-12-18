@@ -26,7 +26,7 @@ beh <- read.csv("data/Behau-4closestpixels.csv") |>
   drop_na()
 plot(beh$time, beh$CHL)
 
-ggplot(beh, aes(x = time, y = CHL)) + geom_line()
+ggplot(beh, aes(x = time, y = CHL)) + geom_line() + scale_y_log10()
 
 bel <- read.csv("data/Beloi.csv") |>
   mutate(time = as.Date(time),
@@ -35,7 +35,12 @@ bel <- read.csv("data/Beloi.csv") |>
          day = day(time),
          Site = "Beloi") |> # add site name
   drop_na()
+
 plot(bel$time, bel$CHL)
+
+bel$t_int <- as.numeric(bel$time) - as.numeric(bel$time[1])
+
+ggplot(bel, aes(x = time, y = CHL)) + geom_line() + scale_y_log10()
 
 # filter 2019 CHL data and combine into one dataframe for plot
 chl <- rbind(beh |> filter(year == 2019),
@@ -43,16 +48,21 @@ chl <- rbind(beh |> filter(year == 2019),
 range(chl$CHL)
 summary(chl)
 
+site_labels <- c(`Be'hau` = "(a) Be'hau",
+                 `Beloi` = "(b) Beloi")
+
 ggplot(chl, aes(x = time, y = CHL)) +
-  geom_point(color = "palegreen3") +
+  geom_point(color = "palegreen3", size = 0.8) +
   #geom_smooth(lty = "dashed", color = "gray50", alpha = 0.8) +
   facet_wrap(vars(Site), nrow = 2, strip.position = "top",
-             scales = "free_y") +
+             scales = "free_y",
+             labeller = as_labeller(site_labels)) +
   theme_bw() +
   theme(panel.grid = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
         strip.background = element_blank(),
-        strip.text = element_text(hjust = 0)) +
+        strip.text = element_text(hjust = 0),
+        text = element_text(size = 8)) +
   labs(x = "", y = "Chlorophyll a [mg m-3]") +
   scale_x_date(limits = as.Date(c("2019-01-01", "2019-12-14")),
                date_breaks = "1 month",
@@ -61,9 +71,10 @@ ggplot(chl, aes(x = time, y = CHL)) +
   # Beloi
   geom_vline(xintercept = as.Date("2019-09-24"), lty = 2, color = "gray40") +
   # Be'hau
-  geom_vline(xintercept = as.Date("2019-10-8"), lty = 2, color = "gray40")
+  geom_vline(xintercept = as.Date("2019-10-8"), lty = 2, color = "gray40") +
+  ggtitle("Figure 3")
 
-# ggsave("plots/chl-a.jpg", width = 12, height = 8, units = "cm", dpi = 600)
+ggsave("plots/chl-a.pdf", width = 8, height = 6, units = "cm", dpi = 600)
 
 # Summary stats
 # 2019 site average
@@ -202,15 +213,15 @@ clim_mean_roll <- clim_mean |>
     map(~#ggsave(paste0("plot_climmeanroll_", first(.$Site), ".png")),
           ggplot(.x, aes(x = as.Date(time), y = roll_anomaly)) +
           geom_line(color = "darkgreen", linewidth = .6) +
-          geom_smooth(method = "lm", se = FALSE, color = "black") +
+          geom_smooth(method = "lm", se = FALSE, color = "gray30", linewidth = .4) +
         #  stat_regline_equation(label.x.npc = "centre", label.y.npc = "top") +
         #  stat_cor(label.x.npc = "center", label.y.npc = "top"") +
           theme_bw() +
           labs(y = "Chlorophyll-a [mg m3]") +
           theme(panel.grid = element_blank(),
                 axis.text.x = element_text(angle = 90, vjust = .5, hjust = 0),
-                text = element_text(size = 14),
-                axix.title.y = element_text(size = 8)) +
+                text = element_text(size = 8),
+                axix.title.y = element_text(size = 6)) +
           # xlim(as.Date(c("1997-09-01", "2024-08-01")))
           scale_x_date(name = "",
                        date_breaks = "1 year",
@@ -305,10 +316,10 @@ soi_roll <- soi_long |>
     geom_segment(data = soi_long$soi |> filter(SOI >= 0),
                  aes(xend = as.Date(DATE), y = 0, yend = SOI), color = "blue") +
     theme_bw() +
-  theme(text = element_text(size = 14),
+  theme(text = element_text(size = 8),
         axis.text.x = element_text(angle = 90, vjust = 0.5),
         panel.grid = element_blank()) +
-  labs(x = "") +
+  labs(x = "", y = "SOI") +
   scale_x_date(name = "",
                date_breaks = "1 year",
                date_labels = "%Y",
@@ -318,7 +329,8 @@ soi_roll <- soi_long |>
 plot_soiroll_col / plot_meanroll_behau / plot_meanroll_beloi +
   plot_layout(axes = "collect") +
   plot_annotation(tag_levels = "A")
-
+ggsave(filename = "plots/soi-behau-beloi-rollingmean.png",
+       width = 8.5, heigh = 10.5, units = "cm")
 
 
 plot_soi_roll$anomaly
