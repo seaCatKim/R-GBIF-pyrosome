@@ -48,8 +48,8 @@ chl <- rbind(beh |> filter(year == 2019),
 range(chl$CHL)
 summary(chl)
 
-site_labels <- c(`Be'hau` = "(a) Be'hau",
-                 `Beloi` = "(b) Beloi")
+site_labels <- c(`Be'hau` = "(a)",
+                 `Beloi` = "(b)")
 
 ggplot(chl, aes(x = time, y = CHL)) +
   geom_point(color = "palegreen3", size = 0.8) +
@@ -74,7 +74,7 @@ ggplot(chl, aes(x = time, y = CHL)) +
   geom_vline(xintercept = as.Date("2019-10-8"), lty = 2, color = "gray40") +
   ggtitle("Figure 3")
 
-ggsave("plots/chl-a.pdf", width = 8, height = 6, units = "cm", dpi = 600)
+ggsave("plots/chl-a.jpg", width = 8, height = 6, units = "cm", dpi = 600)
 
 
 
