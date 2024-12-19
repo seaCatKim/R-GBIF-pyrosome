@@ -13,7 +13,18 @@
 *.Rdata
 *.nc
 *.svg
+*.docx
+*.html
+data/
+
 
 # working script
 old_scripts/
 *.docx
+
+# rendered outputs
+python-correlation_files/
+*.log
+*.tex
+*.bib
+*.csl
