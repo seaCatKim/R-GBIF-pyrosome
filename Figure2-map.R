@@ -102,7 +102,8 @@ ggplot() +
         legend.key = element_blank(),  # removes gray box behind point in legend
         legend.key.size = unit(2,"point")) +
   guides(color = guide_legend(override.aes = list(size = 2,
-                                                  alpha = 1) ) )
+                                                  alpha = 1))) +
+  geom_text(x = -170, y = 85, label = "(a)")
 
 # change file extension for different files e.g., pdf, png
 ggsave("figures/Figure2.jpg",
