@@ -14,8 +14,6 @@ library(purrr)
 library(sf)
 # install.packages("rnaturalearthdata")
 library(rnaturalearth)
-# install.packages('egg')
-library(egg)
 
 #### Get pyrosome Global Biodiversity Information Facility (GBIF) download ####
 # GBIF download request from search using the "Pyrosoma atlanticum" taxon key
