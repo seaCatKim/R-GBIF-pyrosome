@@ -34,7 +34,7 @@ Journal: *Ecology*
 
 ## Chlorophyll-a mass concentration at two sites in Timor-Leste
 
-Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the E.U. Copernicus Marine Service Information platform (CMEMS) for the approximate locations of Beloi Barrier Reef and Be’hau in Timor-Leste from September 19th, 1997 through June 6th, 2024 [@copernicus-chl]. The coastal shelf in-country is very steep and thus the product 4 x 4 km resolution often does not include pixels right along the coast. For Beloi, the nearest pixel east of the reef was selected and the 5 surround pixels of Be’hau (@supptab-pts) were downloaded and visualized using the R programming language [@rcoreteam2023].
+Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the E.U. Copernicus Marine Service Information platform (CMEMS) for the approximate locations of Beloi Barrier Reef and Be'hau in Timor-Leste from September 19th, 1997 through June 6th, 2024 [@copernicus-chl]. The coastal shelf in-country is very steep and thus the product 4 x 4 km resolution often does not include pixels right along the coast. For Beloi, the nearest pixel east of the reef was selected and the 5 surround pixels of Be'hau (@supptab-pts) were downloaded and visualized using the R programming language [@rcoreteam2023].
 
 ::: {#supptab-pts}
 | Site   | Longitude | Latitude |
@@ -47,7 +47,7 @@ Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the 
 |        | 125.93172 | -8.44054 |
 |        | 125.85619 | -8.44123 |
 
-The xy coordinates used to download chlorophyll a data from the Copernicus Marine Service Information. One point (the easternmost adjacent pixel) was used for Beloi and a polygon was drawn to encompass the 5 closest pixels to Be’hau.\
+The xy coordinates used to download chlorophyll a data from the Copernicus Marine Service Information. One point (the easternmost adjacent pixel) was used for Beloi and a polygon was drawn to encompass the 5 closest pixels to Be'hau.\
 :::
 
 ```{r read in Beloi and Behau chlorophyll-a data}
@@ -104,7 +104,7 @@ all_month <- chl_all |>
   mutate(year_mon = as.yearmon(paste0(year, "-", month)))
 ```
 
-The chl-a mass showed similar seasonal patterns at both sites. Early in the year (Jan-Mar) there are more gaps in the data with some peaks of high chl-a because of the wet season. Productivity starts increasing in July through to October (@suppfig-chl-all). The 2019 average of chl-a at Be’hau and Beloi was `{r} round(site_ave$ave[1], 2)` ±`{r} round(site_ave$SD[1],2)` mg m^-3^ (mean ±SD) and `{r} round(site_ave$ave[2], 2)` ±`{r} round(site_ave$SD[2],2)` mg m^-3^, respectively. September had the highest monthly concentration of chl-a of 2019 at `{r} month_ave[17,3] |> round(2)` ±`{r} month_ave[17,4] |> round(2)` mg m^-3^ and `{r} month_ave[18,3] |> round(2)` ±`{r} month_ave[18,4] |> round(2)` mg m^-3^, respectively, which was the same period of the observed pyrosome blooms.
+The chl-a mass showed similar seasonal patterns at both sites. Early in the year (Jan-Mar) there are more gaps in the data with some peaks of high chl-a because of the wet season. Productivity starts increasing in July through to October (@suppfig-chl-all). The 2019 average of chl-a at Be'hau and Beloi was `{r} round(site_ave$ave[1], 2)` ±`{r} round(site_ave$SD[1],2)` mg m^-3^ (mean ±SD) and `{r} round(site_ave$ave[2], 2)` ±`{r} round(site_ave$SD[2],2)` mg m^-3^, respectively. September had the highest monthly concentration of chl-a of 2019 at `{r} month_ave[17,3] |> round(2)` ±`{r} month_ave[17,4] |> round(2)` mg m^-3^ and `{r} month_ave[18,3] |> round(2)` ±`{r} month_ave[18,4] |> round(2)` mg m^-3^, respectively, which was the same period of the observed pyrosome blooms (Figure 3).
 
 ::: {#suppfig-chl-all}
 ```{r plot chl time series}
@@ -121,9 +121,9 @@ ggplot(all_month, aes(x = year_mon, y = ave)) +
              labeller = as_labeller(site_labels)) +
   theme_bw() +
   theme(panel.grid = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 9),
         strip.background = element_blank(),
-        strip.text = element_text(hjust = 0, size = 12)) +
+        strip.text = element_text(hjust = 0, size = 10)) +
   labs(x = "", y = "Chl-a [mg m-3]") +
   scale_x_yearmon(format = "%Y", n = 27) +
   # lines on dates where pyrosomes were observed
@@ -137,7 +137,7 @@ ggplot(all_month, aes(x = year_mon, y = ave)) +
 Chlorophyll-a concentrations from Sept 19th, 1997 through June 6th 2024 at two sites (Be'hau, Beloi) along the north coast of Timor-Leste. The dashed lines represent Sept and Oct of 2019. Monthly (30 days) and annual (360 days) moving average windows were tested for chl-a (@suppfig-chl-explore c).
 :::
 
-## Correlations between Chlorophyll-a and the Southern Oscillation Index
+## Analysis of Chlorophyll-a and the Southern Oscillation Index
 
 ```{r}
 #| include: false
@@ -185,6 +185,7 @@ from scipy.signal import butter, lfilter, freqz
 ```
 
 ```{python read data to python}
+#| include: false
 data = r.bel
 soi_long = r.soi_long
 soi = soi_long["soi"]
@@ -289,6 +290,14 @@ interpolated_SOI = interpolate_missing_values(merged_SOI_df)
 plt.clf()
 plt.plot(interpolated_SOI["C2SOI"])
 plt.show()
+
+
+plt.clf() # clear plot
+# Plot histogram of a subset of interpolated and original SOI
+plt.hist(interpolated_SOI['C2SOI'],  density=True, alpha=0.4, color='green', label='Interpolated data');
+plt.hist(partial_SOI_df['C2SOI'], density=True, alpha=0.25, color='blue', label='Original Data');
+plt.legend(loc = 'upper right')
+plt.show()
 ```
 
 ```{python plot partial and merged chl data old}
@@ -357,14 +366,14 @@ ma360 = moving_average(interpolated_df['Column2'], 360)  # 360-point moving aver
 
 ### Interpolation of missing chl-a data
 
-The goal of the analysis was to determine whether there is any relationship between chl-a and the Southern Oscillation Index - a measure of El Nino Southern Oscillation. The chl-a data had missing values with variable gaps (@suppfig-chl-explore a) and outliers 2 standard deviations from the mean were removed and replaced with the median. In order to estimate the temporal correlation, we require our dataset to not have missing values. For this reason, we fill up the gaps with interpolated values. The comparison between the original and interpolated data shows the distribution and statistical properties of the interpolated data remain unchanged. Both cases have a skewed Gaussian (@suppfig-chl-explore b).
+The goal of the analysis was to determine whether there is any relationship between chl-a and the Southern Oscillation Index - a measure of El Niño Southern Oscillation. The chl-a data had missing values with variable gaps (@suppfig-chl-explore a) and outliers 2 standard deviations from the mean were removed and replaced with the median. In order to estimate the temporal correlation, we fill up the gaps with interpolated values. The comparison between the original and interpolated data shows the distribution and statistical properties of the interpolated data remain unchanged. Both cases have a skewed Gaussian (@suppfig-chl-explore b).
 
-Using the interpolated data, we can analyse fast (monthly) and slow (yearly) changes throughout the time series by calculating the moving average for 30 days (monthly) and 360 days (yearly).\
+Using the interpolated data, we can analyse fast (monthly) and slow (yearly) changes throughout the time series by calculating the moving average for 30 days and 360 days.\
 
 ::: {#suppfig-chl-explore}
 ```{python plots of chl data exploration}
 #| suppfig-pos: 'h'
-#| fig-height: 8
+#| fig-height: 7
 
 plt.clf()
 #plt.rcParams['figure.figsize'] = [4, 5]
@@ -376,7 +385,7 @@ ax1.plot(merged_df['Column1'][700:1050],merged_df['Column2'][700:1050], linestyl
 ax1.set_xlabel('Days');
 ax1.set_ylabel('Chl-a [mg m-3]');
 ax1.legend();
-ax1.set_title('a)', fontsize='small', loc='left')
+ax1.set_title('(a)', fontsize=10, loc='left')
 
 # Plot histogram of a subset of interpolated and original chl data
 ax2.hist(interpolated_df['Column2'], bin_list, density=True, alpha=0.4, color='green', label='Interpolated data');
@@ -385,7 +394,7 @@ ax2.hist(data['CHL'], bin_list, density=True, alpha=0.25, color='blue', label='O
 # Plot the fitted skew normal distribution
 ax2.plot(x, pdf, 'r-', lw=3, label='Skew Gaussian Fit');
 # Add labels and title
-ax2.set_title('b)', fontsize='small', loc='left')
+ax2.set_title('(b)', fontsize=10, loc='left')
 ax2.set_xlabel('Data');
 ax2.set_ylabel('Density');
 ax2.legend();
@@ -398,26 +407,25 @@ ax3.set_xlabel('Days from first measurement')
 ax3.set_ylabel('Chl-a [mg m-3]')
 ax3.legend(loc = 'upper right')
 #ax3.grid(True)
-ax3.set_title('c)', fontsize='small', loc='left')
+ax3.set_title('(c)', loc='left', fontsize = 10)
 
 plt.subplots_adjust(hspace = 0.5)
+plt.tight_layout()
 #plt.show()
 ```
 
-Chlorophyll-a data exploration. a) Merged and filtered data for the chl-a data for a subset of 200 days from Beloi. b) Skewed Gaussian distribution of the chl-a data for Beloi. c) Interpolated missing data for chl-a and 30, 360 day moving averages of chl-a.
+Chlorophyll-a data exploration. (a) Merged and filtered data for the chl-a data for a subset of 200 days from Beloi. (b) Skewed Gaussian distribution of the chl-a data for Beloi. (c) Interpolated missing data for chl-a and 30, 360 day moving averages of chl-a.
 :::
 
 ### Southern Oscillation Index data
 
 The Southern Oscillation Index (SOI) is one atmospheric measure of the El Niño Southern Oscillation based on the differences in air pressure anomaly between Tahiti and Darwin, Australia. The smoothed SOI time series correspond well with changes in ocean temperatures across the eastern tropical Pacific. The negative phase of the SOI coincides with El Niño conditions i.e., abnormally warm ocean waters across the eastern tropical Pacific. Prolonged periods of positive SOI values coincide with La Niña episodes i.e., abnormally cold ocean waters across the eastern tropical Pacific. The SOI data were downloaded from the US National Oceanic and Atmospheric Administration National Weather Service Climate Prediction Center (@climatepredictioncenterSOI).
 
-SOI values are reported monthly so to match the temporal resolution of the chl-a the outliers 2 standard deviations from the mean were removed and replaced with the median
-
-Monthly SOI was interpolated to a daily resolution for the same period as the chl-a data. Monthly (30 days) and annual (360 days) moving average windows were tested for the SOI (@suppfig-soi-ma).
+SOI values are reported monthly so to match the temporal resolution of the chl-a the outliers were treated the same as the chl-a. Monthly SOI was interpolated to a daily resolution subset to the same period as the chl-a data. Monthly (30 days) and annual (360 days) moving average windows were tested for the SOI (@suppfig-soi-ma).
 
 ::: {#suppfig-soi-ma}
 ```{python}
-#| suppfig-pos: 'h' 
+#| fig-height: 6
 plt.clf()
 
 SOIma30 = moving_average(interpolated_SOI['C2SOI'], 30)   # 30-point moving average
@@ -426,25 +434,34 @@ SOIma360 = moving_average(interpolated_SOI['C2SOI'], 360)  # 360-point moving av
 # Since z has a larger window, we trim the y to match z's length
 min_length = min(len(ma30), len(ma360))
 
+# supplots of:
+fig, (s1, s2) = plt.subplots(2)
 
-#plt.subplot(2, 1, 1)
-plt.figure(figsize=(8, 4));
-plt.ylim(0.1, 2);
+# SOI original and inteprolated data
+s1.hist(interpolated_SOI['C2SOI'],  density=True, alpha=0.4, color='green', label='Interpolated data');
+s1.hist(partial_SOI_df['C2SOI'], density=True, alpha=0.25, color='blue', label='Original Data');
+s1.legend(loc = 'upper right')
+s1.set_title('(a)', fontsize=10, loc='left')
+
+#plt.figure(figsize=(8, 4));
+#s2.ylim(0.1, 2);
 #plt.plot(data['t_int'],data['CHL'], label='y', color='red')
 #plt.plot(partial_SOI_df['C1SOI'],partial_SOI_df['C2SOI'], linestyle='-',color='red', marker='o')
-plt.plot(interpolated_SOI, linestyle='-',color='red', label = 'Interpolated SOI', alpha = 0.5);
-plt.plot(SOIma30, label='SOI moving average 30 days',linestyle='-');
-plt.plot(SOIma360, label='SOI moving average 360 days',linestyle='-',color='green');
-plt.xlim(0,10000);
-plt.ylim(-4,4);
-plt.xlabel('Months')
-plt.ylabel('SOI')
-plt.legend()
-#plt.grid(True)
+s2.plot(interpolated_SOI['C2SOI'], linestyle='-',color='red', label = 'Interpolated SOI', alpha = 0.5);
+s2.plot(SOIma30, label='SOI moving average 30 days',linestyle='-');
+s2.plot(SOIma360, label='SOI moving average 360 days',linestyle='-',color='green');
+#s2.xlim(0,10000);
+#s2.ylim(-4,4);
+s2.set_xlabel('Months')
+s2.set_ylabel('SOI')
+s2.legend(loc = 'lower right')
+s2.set_title('(b)', fontsize=10, loc='left')
+
+plt.tight_layout()
 #plt.show()
 ```
 
-The interpolated Souther Oscillation Index (SOI), 30 day moving average, and 360 day moving average for the historical time series starting Jan 1951.
+Southern Oscillation Index (SOI) distribution and moving averages. (a) Histogram of the original Southern Oscillation Index subset to the same period as the chlorophyll-a data and the interpolated from monthly to daily resolution. (b) The interpolated Souther Oscillation Index (SOI), 30 day moving average, and 360 day moving average for the historical time series starting Jan 1951.
 :::
 
 ```{python}
@@ -468,7 +485,7 @@ plt.xlabel('Months')
 plt.ylabel('SOI value')
 plt.legend()
 plt.grid(True)
-plt.show()
+#plt.show()
 ```
 
 ```{python}
@@ -492,15 +509,13 @@ plt.xlabel('Days')
 plt.ylabel('SOI value')
 plt.legend()
 plt.grid(True)
-plt.show()
-#x = SOIma30[1:len(SOIma30)]
+#plt.show()
 ```
 
 ```{python}
-#a_data = np.random.randn(1000)  # replace with actual dataset
-#b_data = np.random.randn(1000)  # replace with actual dataset
-a_data = SOIma360[1:len(SOIma360)]  # replace with actual dataset
-b_data = ma360[1:len(ma360)]  # replace with actual dataset
+#| include: false
+a_data = SOIma360[1:len(SOIma360)]  
+b_data = ma360[1:len(ma360)]
 
 # Function to calculate correlation as per given expression
 def calculate_correlation(a_data, b_data):
@@ -530,17 +545,21 @@ for i in range(1, max_lag):
 cor1 = correlations[1]
 cor = round(np.min(correlations), 2)
 lag = np.argmin(correlations)
+
+shifted_b_data = b_data[lag:]  # Shift b_data by i
+shortened_a_data = a_data[:-lag]
+
+cor_lag = stats.pearsonr(shortened_a_data, shifted_b_data)
+cor_lag.confidence_interval()
 ```
 
 ### Correlation between chl-a and SOI
 
-Correlations between the chl-a and SOI data were calculated testing a lag of 1 to 360 days. SOI and chl-a are negatively correlated with a minimum correlation of -0.68 at a lag of 186 days (\~6 months) (@suppfig-chl-soi-correlation).
-
-and obtain a correlation of -0.4. However, when we plot them, it is evident that there is a lag between the two indices. We calculate the correlation between the two indices as a function of the lag between them, finding the minimum happening with a lag of 186 days, as shown in Fig. XXX. We then plot the two normalized indices with a relative lag of 186 days between them and we can see that
+Correlations between the chl-a and SOI data were calculated testing a lag of 1 to 360 days. There is a significant negative correlations between SOI and chl-a (R = -0.68, p-value \< 0.0001) at a lag of 186 days (@suppfig-chl-soi-correlation). The strongest correlation occurred at a lag of 6 months where a positive SOI (La Niña conditions) is correlated with less chl-a.
 
 ::: {#suppfig-chl-soi-correlation}
 ```{python plot correlation lag test and chl and soi for best lag}
-#| suppfig-pos: 'h'
+#| suppfig-width: 5
 
 plt.clf()
 fig, (p1, p2) = plt.subplots(2)
@@ -550,7 +569,7 @@ p1.plot(range(1, max_lag), correlations, marker='o', linestyle='-', color='b')
 #p1.title('Correlation between SOI and CHL as a function of lag ')
 p1.set_xlabel('Lag in days')
 p1.set_ylabel('Correlation')
-p1.set_title('a)', fontsize='small', loc='left')
+p1.set_title('(a)', fontsize=10, loc='left')
 p1.grid(True)
 
 # normalize the chl so mean is 0 and std is 1 for comparison
@@ -565,14 +584,15 @@ p2.plot(SOIma360[1:len(SOIma360)], linestyle='-', color='r', label = 'SOI')
 p2.set_xlabel('Time (days)')
 p2.set_ylabel('Normalized chl-a')
 #p2.grid(True)
-p2.legend(loc = 'upper right')
-p2.set_title('b)', fontsize='small', loc='left')
+p2.legend(loc = 'lower right')
+p2.set_title('(b)', fontsize=10, loc='left')
 
 plt.subplots_adjust(hspace = 0.5)
+plt.tight_layout()
 #plt.show()
 ```
 
-Correlations between chl-a and SOI. a) The correlation between chl-a and SOI calculated at lags from 1 to 60 days. b) The normalized (mean = 0, stdev = 1) chl-a data plotted with SOI.
+Correlations between chl-a and SOI. (a) The correlation between chl-a and SOI calculated at lags from 1 to 60 days. (b) The normalized (mean = 0, stdev = 1) chl-a data plotted with SOI.
 :::
 
 ## References
