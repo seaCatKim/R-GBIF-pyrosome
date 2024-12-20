@@ -65,8 +65,9 @@ raw_dat <- ggplot(d, aes(year, fill = basisOfRecord)) +
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank(),
         panel.grid = element_blank(),
-        legend.position = c(0.2, 0.6),
-        plot.margin = unit(c(0, 0, 0, 0), "lines"))
+        legend.position = c(0.3, 0.6),
+        plot.margin = unit(c(0, 0, 0, 0), "lines")) +
+  geom_text(aes(x = 1875, y = 395, label = "(a)"))
 raw_dat
 # save histogram in plots folder
 # change file extension for different files e.g., pdf, png
@@ -103,7 +104,8 @@ no_inat <- d |>
         panel.grid = element_blank(),
         legend.position = c(0.14, 0.87),
         plot.margin = unit(c(0, 0, 0, 0), "lines")) +
-  labs(y = "", x = "Year")
+  labs(y = "", x = "Year") +
+  geom_text(aes(x = 1875, y = 390, label = "(b)"))
 no_inat
 
 d |>
@@ -170,12 +172,12 @@ standardized <- d |>
         panel.grid = element_blank(),
         legend.position = c(0.14, 0.87),
         plot.margin = unit(c(0, 0, 0, 0), "lines")) +
-  labs(y = "", x = "Year")
+  labs(y = "", x = "Year") +
+  geom_text(aes(x = 1875, y = 390, label = "(c)"))
 standardized
 
 # patchwork plots together
-raw_dat / no_inat / standardized +
-  plot_annotation(tag_levels = 'a')
+raw_dat / no_inat / standardized
 
-ggsave("figures/FigureS1.jpg",
+ggsave("figures/FigureS1.pdf",
        height = 14, width = 12, units = "cm")
