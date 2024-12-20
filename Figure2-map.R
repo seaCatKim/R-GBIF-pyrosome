@@ -14,6 +14,8 @@ library(purrr)
 library(sf)
 # install.packages("rnaturalearthdata")
 library(rnaturalearth)
+# install.packages('egg')
+library(egg)
 
 #### Get pyrosome Global Biodiversity Information Facility (GBIF) download ####
 # GBIF download request from search using the "Pyrosoma atlanticum" taxon key
@@ -75,6 +77,8 @@ dt <- d_sf |>
   )
 
 # map of pyrosome observations, facet by basis of record
+labs <- data.frame(labels=c("(a)", "(b)", "(c)"),
+                   basisOfRecord = c("Human Observation", "Occurence", "Preserved Specimen"))
 ggplot() +
   geom_sf(data = worldmap, fill = "gray85",  color = NA) +
   geom_sf(data = dt, aes(color=time), alpha = 0.3, size = 0.8) +
@@ -89,13 +93,13 @@ ggplot() +
   # add tropics lines of latitude
   geom_hline(yintercept = 23.5, linetype = "dashed", color = "gray20") +
   geom_hline(yintercept = -23.5, linetype = "dashed", color = "gray20") +
-  annotate("text", x = -180, y = 30, label = "23.5", size = 2) +
-  annotate("text", x = -180, y = -30, label = "-23.5", size = 2) +
+  annotate("text", x = -180, y = 30, label = "23.5", size = 4) +
+  annotate("text", x = -180, y = -30, label = "-23.5", size = 4) +
   labs(y = "", x = "") + # , title = "Figure 2") + # for pdf version of figure
   theme(text = element_text(size = 14),
         panel.background = element_blank(),
         panel.border = element_rect(fill = NA),
-        plot.margin = unit(c(0, 0, 0, -1), "lines"),
+        plot.margin = unit(c(1, 0, 0, -1), "lines"),
         panel.ontop = FALSE,
         legend.position = c(.14, .42),
         legend.background = element_blank(),
@@ -103,8 +107,9 @@ ggplot() +
         legend.key.size = unit(2,"point")) +
   guides(color = guide_legend(override.aes = list(size = 2,
                                                   alpha = 1))) +
-  geom_text(x = -170, y = 85, label = "(a)")
+  geom_text(data = labs, aes(x = -180, y = 85, label = labels)) +
+  labs(subtitle = "Figure 2")
 
 # change file extension for different files e.g., pdf, png
-ggsave("figures/Figure2.jpg",
+ggsave("figures/Figure2.pdf",
        height = 22, width =18, units = "cm", dpi = 600)
