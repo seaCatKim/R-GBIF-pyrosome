@@ -28,7 +28,7 @@ csl: apa.csl
 
 **Appendix S2**
 
-Title: Pyrosomes, *Pyrosoma atlanticum*: an important food source for coral reefs in Timor-Leste
+Title: Pyrosomes, *Pyrosoma atlanticum*: highlighting plankton as an important food source for coral reefs in Timor-Leste
 
 Authors: Catherine J. S. Kim, Russell Kelley
 
