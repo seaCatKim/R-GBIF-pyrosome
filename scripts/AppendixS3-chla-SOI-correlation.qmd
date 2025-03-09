@@ -49,14 +49,19 @@ Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the 
 
 The xy coordinates used to download chlorophyll a data from the Copernicus Marine Service Information. One point (the easternmost adjacent pixel) was used for Beloi and a polygon was drawn to encompass the 5 closest pixels to Be'hau.\
 :::
-
-```{r read in Beloi and Behau chlorophyll-a data}
+```{r packages}
 #| include: false
 library(tidyverse)
 library(patchwork)
 library(zoo)
+library(here)
+library(ggtext)
+```
 
-beh <- read.csv("data/Behau-4closestpixels.csv") |>
+```{r read in Beloi and Behau chlorophyll-a data}
+#| include: false
+here()
+beh <- read.csv(here("data/Behau-4closestpixels.csv")) |>
   mutate(time = as.Date(time),
          year = year(time),
          month = month(time),
@@ -67,7 +72,7 @@ plot(beh$time, beh$CHL)
 
 ggplot(beh, aes(x = time, y = CHL)) + geom_line() + scale_y_log10()
 
-bel <- read.csv("data/Beloi.csv") |>
+bel <- read.csv(here("data/Beloi.csv")) |>
   mutate(time = as.Date(time),
          year = year(time),
          month = month(time),
@@ -98,10 +103,10 @@ month_ave[17, 3] |> round(2)
 chl_all <- rbind(beh, bel)
 dim(chl_all)
 
-all_month <- chl_all |>
+(all_month <- chl_all |>
   group_by(year, month, Site)|>
   summarize(ave = mean(CHL), SD = sd(CHL), SE = SD/sqrt(n())) |> 
-  mutate(year_mon = as.yearmon(paste0(year, "-", month)))
+  mutate(year_mon = as.yearmon(paste0(year, "-", month))))
 ```
 
 The chl-a mass showed similar seasonal patterns at both sites. Early in the year (Jan-Mar) there are more gaps in the data with some peaks of high chl-a because of the wet season. Productivity starts increasing in July through to October (@suppfig-chl-all). The 2019 average of chl-a at Be'hau and Beloi was `{r} round(site_ave$ave[1], 2)` ±`{r} round(site_ave$SD[1],2)` mg m^-3^ (mean ±SD) and `{r} round(site_ave$ave[2], 2)` ±`{r} round(site_ave$SD[2],2)` mg m^-3^, respectively. September had the highest monthly concentration of chl-a of 2019 at `{r} month_ave[17,3] |> round(2)` ±`{r} month_ave[17,4] |> round(2)` mg m^-3^ and `{r} month_ave[18,3] |> round(2)` ±`{r} month_ave[18,4] |> round(2)` mg m^-3^, respectively, which was the same period of the observed pyrosome blooms (Figure 3).
@@ -123,8 +128,9 @@ ggplot(all_month, aes(x = year_mon, y = ave)) +
   theme(panel.grid = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1, size = 9),
         strip.background = element_blank(),
-        strip.text = element_text(hjust = 0, size = 10)) +
-  labs(x = "", y = "Chl-a [mg m-3]") +
+        strip.text = element_text(hjust = 0, size = 10),
+        axis.title = element_markdown()) +
+  labs(x = "", y = "Chlorophyll-a [mg m<sup>-3</sup>]") +
   scale_x_yearmon(format = "%Y", n = 27) +
   # lines on dates where pyrosomes were observed
   # Beloi
@@ -139,17 +145,18 @@ Chlorophyll-a concentrations from Sept 19th, 1997 through June 6th 2024 at two s
 
 ## Analysis of Chlorophyll-a and the Southern Oscillation Index
 
-```{r}
+```{r start python}
 #| include: false
+# must have python installed 
 library(reticulate)
 py_config()
 ```
 
-```{r}
+```{r read in soi data}
 #| include: false
-soi <- read.csv("data/SOI-sealevelpress-standardized.csv",
+soi <- read.csv(here("data/SOI-sealevelpress-standardized.csv"),
                 na.strings = "-999.9")
-anomaly <- read.csv("data/SOI-sealevelpress-anomaly.csv",
+anomaly <- read.csv(here("data/SOI-sealevelpress-anomaly.csv"),
                     na.strings = "-999.9")
 
 l_soi <- list(soi = soi, anomaly = anomaly) # store in a list to map functions
