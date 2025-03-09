@@ -38,7 +38,7 @@ Journal: *Ecology*
 
 ## Chlorophyll-a mass concentration at two sites in Timor-Leste
 
-Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the E.U. Copernicus Marine Service Information platform (CMEMS) for the approximate locations of Beloi Barrier Reef and Be'hau in Timor-Leste from September 19th, 1997 through June 6th, 2024 [@copernicus-chl]. The coastal shelf in-country is very steep and thus the product 4 x 4 km resolution often does not include pixels right along the coast. For Beloi, the nearest pixel east of the reef was selected and the 5 surround pixels of Be'hau (@supptab-pts) were downloaded and visualized using the R programming language [@rcoreteam2023].
+Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the E.U. Copernicus Marine Service Information platform (CMEMS) for the approximate locations of Beloi Barrier Reef and Be'hau in Timor-Leste from September 19th, 1997 through June 6th, 2024 [@copernicus-chl]. The coastal shelf in-country is very steep and thus the product 4 x 4 km resolution often does not include pixels right along the coast. For Beloi, the nearest pixel east of the reef was selected and the 5 surround pixels of Be'hau (@supptab-pts) were downloaded and visualized using the R programming language v4.4 [@rcoreteam2024].
 
 ::: {#supptab-pts}
 | Site   | Longitude | Latitude |
@@ -53,6 +53,7 @@ Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the 
 
 The xy coordinates used to download chlorophyll a data from the Copernicus Marine Service Information. One point (the easternmost adjacent pixel) was used for Beloi and a polygon was drawn to encompass the 5 closest pixels to Be'hau.\
 :::
+
 ```{r packages}
 #| include: false
 library(tidyverse)
@@ -376,7 +377,7 @@ ma360 = moving_average(interpolated_df['Column2'], 360)  # 360-point moving aver
 
 ### Interpolation of missing chl-a data
 
-The goal of the analysis was to determine whether there is any relationship between chl-a and the Southern Oscillation Index - a measure of El Niño Southern Oscillation. The chl-a data had missing values with variable gaps (@suppfig-chl-explore a) and outliers 2 standard deviations from the mean were removed and replaced with the median. In order to estimate the temporal correlation, we fill up the gaps with interpolated values. The comparison between the original and interpolated data shows the distribution and statistical properties of the interpolated data remain unchanged. Both cases have a skewed Gaussian (@suppfig-chl-explore b).
+The goal of the analysis was to determine whether there is any relationship between chl-a and the Southern Oscillation Index - a measure of El Niño Southern Oscillation. The chl-a data had missing values with variable gaps (@suppfig-chl-explore a) and outliers 2 standard deviations from the mean were removed and replaced with the median. In order to estimate the temporal correlation, we fill up the gaps with interpolated values. The comparison between the original and interpolated data shows the distribution and statistical properties of the interpolated data remain unchanged. Both cases have a skewed Gaussian (@suppfig-chl-explore b). These and subsequent analyses were done in python v3.3 (@pythonsoftwarefoundation)
 
 Using the interpolated data, we can analyse fast (monthly) and slow (yearly) changes throughout the time series by calculating the moving average for 30 days and 360 days.\
 
