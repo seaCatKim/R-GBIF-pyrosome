@@ -59,13 +59,14 @@ raw_dat <- ggplot(d, aes(year, fill = basisOfRecord)) +
   scale_fill_brewer(name = "Basis of Record",
                     palette = "Dark2") +
 #  scale_fill_viridis_d() +
+  guides(fill = guide_legend(position = "inside")) +
   theme(text = element_text(size=10),
         legend.title = element_text(size = 10),
         axis.text.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank(),
         panel.grid = element_blank(),
-        legend.position = c(0.3, 0.6),
+        legend.position.inside = c(0.3, 0.6),
         plot.margin = unit(c(0, 0, 0, 0), "lines")) +
   geom_text(aes(x = 1875, y = 395, label = "(a)"))
 raw_dat
@@ -156,6 +157,9 @@ d <- d |>
     .default = institutionCode
   ))
 
+#### Summarize by institudtion and basis of record #########
+# some institutions had every sample as an observation and others had whole surveys as one observation
+# correcting for this by summing by date, institution, and basis of record
 standardized <- d |>
   group_by(day, month, year, institutionCode, basisOfRecord) |>
   count() |>
@@ -172,12 +176,13 @@ standardized <- d |>
         panel.grid = element_blank(),
         legend.position = c(0.14, 0.87),
         plot.margin = unit(c(0, 0, 0, 0), "lines")) +
-  labs(y = "", x = "Year") +
+  ylab(NULL) + xlab(NULL) +
   geom_text(aes(x = 1875, y = 390, label = "(c)"))
 standardized
 
 # patchwork plots together
 raw_dat / no_inat / standardized
 
+# save patchwork plot
 ggsave("figures/FigureS1.pdf",
        height = 14, width = 12, units = "cm")
