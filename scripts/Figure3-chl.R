@@ -15,6 +15,7 @@
 library(tidyverse)
 library(patchwork)
 library(zoo)
+library(ggtext) # ggplot superscript in label
 
 # read in Behau and Beloi Chl a data
 beh <- read.csv("data/Behau-4closestpixels.csv") |>
@@ -49,6 +50,7 @@ summary(chl)
 site_labels <- c( `Be'hau` = "(a)",
                             `Beloi` = "(b)")
 
+# plot chl-a abundance for two sites over 2019
 ggplot(chl, aes(x = time, y = CHL)) +
   geom_point(color = "palegreen3", size = 0.8) +
   #geom_smooth(lty = "dashed", color = "gray50", alpha = 0.8) +
@@ -60,8 +62,9 @@ ggplot(chl, aes(x = time, y = CHL)) +
         axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
         strip.background = element_blank(),
         strip.text = element_text(hjust = 0),
-        text = element_text(size = 8)) +
-  labs(x = "", y = "Chlorophyll a [mg m-3]") +
+        text = element_text(size = 8),
+        axis.title = element_markdown()) +
+  labs(x = "", y = "Chlorophyll-a [mg m<sup>-3</sup>]") +
   scale_x_date(limits = as.Date(c("2019-01-01", "2019-12-14")),
                date_breaks = "1 month",
                date_labels = "%b") +
@@ -72,5 +75,6 @@ ggplot(chl, aes(x = time, y = CHL)) +
   geom_vline(xintercept = as.Date("2019-10-8"), lty = 2, color = "gray40") +
   ggtitle("Figure 3")
 
-ggsave("figures/Figure3-chl.pdf", width = 8, height = 6, units = "cm", dpi = 600)
+# save to figures directory
+ggsave("figures/Figure3.pdf", width = 8, height = 6, units = "cm", dpi = 600)
 
