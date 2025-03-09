@@ -1,5 +1,5 @@
 ## Description: Map of Global Biodiversity Information Facility pyrosome data faceted by year
-## Date: Oct 7, 2023
+## Date: March 9, 2025
 ## Author: Catherine Kim
 
 # install.packages("rgbif")

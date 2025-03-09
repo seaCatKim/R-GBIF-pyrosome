@@ -1,4 +1,6 @@
-## Copernicus Chlorophyll a data
+## Description: Copernicus Chlorophyll a data
+## Date: March 9, 2025
+## Author: Catherine Kim
 ## Credits: EU Copernicus Marine Service information - https://marine.copernicus.eu
 ## Product: OCEANCOLOUR_GLO_BGC_L3_MY_009_103
 ## Dataset: cmems_obs-oc_glo_bgc-plankton_my_l3-multi-4km_P1D
