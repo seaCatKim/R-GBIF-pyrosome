@@ -181,7 +181,6 @@ bel$t_int <- as.numeric(bel$time) - as.numeric(bel$time[1])
 
 ```{python import libraries}
 #!pip install numpy pandas matplotlib scipy
-
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
