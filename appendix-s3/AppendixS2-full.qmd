@@ -1,5 +1,7 @@
 ---
-format: docx
+format: 
+  docx:
+    reference-doc: appendix-reference-doc.docx
 execute: 
   echo: false
   warning: false
@@ -31,6 +33,8 @@ Title: Pyrosomes, *Pyrosoma atlanticum*: an important food source for coral reef
 Authors: Catherine J. S. Kim, Russell Kelley
 
 Journal: *Ecology*
+
+<br>
 
 ## Chlorophyll-a mass concentration at two sites in Timor-Leste
 
@@ -198,7 +202,7 @@ soi = soi_long["soi"]
 soi["Index"] = range(len(soi))
 ```
 
-```{python}
+```{python replace outliers}
 #| include: false
 # Function to detect and replace outliers with median using IQR method
 def replace_outliers_with_median(data, threshold=10):
@@ -430,7 +434,7 @@ The Southern Oscillation Index (SOI) is one atmospheric measure of the El Niño 
 SOI values are reported monthly so to match the temporal resolution of the chl-a the outliers were treated the same as the chl-a. Monthly SOI was interpolated to a daily resolution subset to the same period as the chl-a data. Monthly (30 days) and annual (360 days) moving average windows were tested for the SOI (@suppfig-soi-ma).
 
 ::: {#suppfig-soi-ma}
-```{python}
+```{python soi moving average}
 #| fig-height: 6
 plt.clf()
 
@@ -470,7 +474,7 @@ plt.tight_layout()
 Southern Oscillation Index (SOI) distribution and moving averages. (a) Histogram of the original Southern Oscillation Index subset to the same period as the chlorophyll-a data and the interpolated from monthly to daily resolution. (b) The interpolated Souther Oscillation Index (SOI), 30 day moving average, and 360 day moving average for the historical time series starting Jan 1951.
 :::
 
-```{python}
+```{python }
 #| include: false
 #plt.subplot(2, 1, 1)
 plt.figure(figsize=(8, 4))
