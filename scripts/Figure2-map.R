@@ -12,7 +12,7 @@ library(dplyr)
 library(purrr)
 # install.packages("sf")
 library(sf)
-# install.packages("rnaturalearthdata")
+# install.packages("rnaturalearth")
 library(rnaturalearth)
 
 #### Get pyrosome Global Biodiversity Information Facility (GBIF) download ####
