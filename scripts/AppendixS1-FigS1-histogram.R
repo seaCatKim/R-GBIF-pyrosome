@@ -2,12 +2,19 @@
 ## Date: March 9, 2025
 ## Author: Catherine Kim
 
+# install.packages("rgbif")
 library(rgbif)
+# install.packages("ggplot2")
 library(ggplot2)
+# install.packages("dplyr")
 library(dplyr)
+# install.packages("sf")
 library(sf)
+# install.packages("lubridate")
 library(lubridate)
+# install.packages("purrr")
 library(purrr)
+# install.packages("patchwork")
 library(patchwork)
 
 #### Get pyrosome Global Biodiversity Information Facility (GBIF) download ####
