@@ -21,6 +21,6 @@ In the `appendixS2` directory, run:
 
 - AppendixS2-full.qmd
 
-This file requires both R and python to run. The `references.bib` file contains the references formatted in APA style as in `apa.csl`. The `appendix-reference-doc.docx` is the MS Word template for the formatting of the ouput `.docx` file. The Word document was exported as a pdf for the final publication.
+This file requires both **R** and **python** to run. The `references.bib` file contains the references formatted in APA style as in `apa.csl`. The `appendix-reference-doc.docx` is the MS Word template for the formatting of the ouput `.docx` file. The Word document was exported as a pdf for the final publication.
 
 Note: The scripts use the native R pipe which will require R v4.0 or greater.
