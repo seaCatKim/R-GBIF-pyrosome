@@ -44,14 +44,14 @@ Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the 
 | Site   | Longitude | Latitude |
 |--------|-----------|----------|
 | Beloi  | 125.63097 | -8.23111 |
-| Beh'au | 125.85619 | -8.44123 |
+| Be'hau | 125.85619 | -8.44123 |
 |        | 125.85481 | -8.47693 |
 |        | 125.92622 | -8.47968 |
 |        | 125.93172 | -8.43848 |
 |        | 125.93172 | -8.44054 |
 |        | 125.85619 | -8.44123 |
 
-The xy coordinates used to download chlorophyll a data from the Copernicus Marine Service Information. One point (the easternmost adjacent pixel) was used for Beloi and a polygon was drawn to encompass the 5 closest pixels to Be'hau.\
+The xy coordinates used to download chlorophyll a data from the Copernicus Marine Service Information. One point (the easternmost adjacent pixel) was used for Beloi and a polygon was drawn to encompass the 5 closest pixels to Be'hau.
 :::
 
 ```{r packages}
