@@ -114,7 +114,7 @@ dim(chl_all)
   mutate(year_mon = as.yearmon(paste0(year, "-", month))))
 ```
 
-The chl-a mass showed similar seasonal patterns at both sites. Early in the year (Jan-Mar) there are more gaps in the data with some peaks of high chl-a because of the wet season. Productivity starts increasing in July through to October (@suppfig-chl-all). The 2019 average of chl-a at Be'hau and Beloi was `{r} round(site_ave$ave[1], 2)` ±`{r} round(site_ave$SD[1],2)` mg m^-3^ (mean ±SD) and `{r} round(site_ave$ave[2], 2)` ±`{r} round(site_ave$SD[2],2)` mg m^-3^, respectively. September had the highest monthly concentration of chl-a of 2019 at `{r} month_ave[17,3] |> round(2)` ±`{r} month_ave[17,4] |> round(2)` mg m^-3^ and `{r} month_ave[18,3] |> round(2)` ±`{r} month_ave[18,4] |> round(2)` mg m^-3^, respectively, which was the same period of the observed pyrosome blooms (Figure 3).
+The chl-a mass showed similar seasonal patterns at both sites (@suppfig-chl-all). Early in the year (Jan-Mar) there are more gaps in the data with some peaks of high chl-a because of the wet season. Productivity starts increasing in July through to October. The 2019 average of chl-a at Be'hau and Beloi was `{r} round(site_ave$ave[1], 2)` ±`{r} round(site_ave$SD[1],2)` mg m^-3^ (mean ±SD) and `{r} round(site_ave$ave[2], 2)` ±`{r} round(site_ave$SD[2],2)` mg m^-3^, respectively. September had the highest monthly concentration of chl-a of 2019 at `{r} month_ave[17,3] |> round(2)` ±`{r} month_ave[17,4] |> round(2)` mg m^-3^ and `{r} month_ave[18,3] |> round(2)` ±`{r} month_ave[18,4] |> round(2)` mg m^-3^, respectively, which was the same period of the observed pyrosome blooms (Figure 3).
 
 ::: {#suppfig-chl-all}
 ```{r plot chl time series}
@@ -145,7 +145,7 @@ ggplot(all_month, aes(x = year_mon, y = ave)) +
 
 ```
 
-Chlorophyll-a concentrations from Sept 19th, 1997 through June 6th 2024 at two sites (Be'hau, Beloi) along the north coast of Timor-Leste. The dashed lines represent Sept and Oct of 2019. Monthly (30 days) and annual (360 days) moving average windows were tested for chl-a (@suppfig-chl-explore c).
+Chlorophyll-a concentrations from Sept 19th, 1997 through June 6th 2024 at two sites (Be'hau, Beloi) along the north coast of Timor-Leste. The dashed lines represent Sept and Oct of 2019.
 :::
 
 ## Analysis of Chlorophyll-a and the Southern Oscillation Index
