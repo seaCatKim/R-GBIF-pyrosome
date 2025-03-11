@@ -2,7 +2,7 @@
 
 Published in *Ecology* as a Scientific Naturalist article.
 
-**Reference** Kim, CJS & Kelley. (in press). Pyrosome, *Pyrosoma atlanticum*: highlighting plankton as an important food source for coral reefs in Timor-Leste. *Ecology*. doi: XXXX.
+**Reference:** Kim, CJS & Kelley. (in press). Pyrosome, *Pyrosoma atlanticum*: highlighting plankton as an important food source for coral reefs in Timor-Leste. *Ecology*. doi: XXXX.
 
 Blooms of *Pyrosoma atlanticum* were observed in late 2019 in Timor-Leste at two sites. Data on the occurence of pyrosomes globally was searched in the Global Biodiversity Information Facility using the *P. atlanticum* taxonkey. The data search can be found [here](https://doi.org/10.15468/dl.vv3adq).
 
