@@ -1,6 +1,6 @@
 # Data and code for: Pyrosome, *Pyrosoma atlanticum*: highlighting plankton as an important food source for coral reefs in Timor-Leste
 
-Published in *Ecology* as a Scientific Naturalist article.
+Published in *Ecology* as a Scientific Naturalist article. [![DOI](https://zenodo.org/badge/732505193.svg)](https://doi.org/10.5281/zenodo.15004354)
 
 **Reference:** Kim, CJS & Kelley. (in press). Pyrosome, *Pyrosoma atlanticum*: highlighting plankton as an important food source for coral reefs in Timor-Leste. *Ecology*. doi: XXXX.
 
