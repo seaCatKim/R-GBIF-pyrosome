@@ -38,7 +38,7 @@ Journal: *Ecology*
 
 ## Chlorophyll-a mass concentration at two sites in Timor-Leste
 
-Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the E.U. Copernicus Marine Service Information platform (CMEMS) for the approximate locations of Beloi Barrier Reef and Be'hau in Timor-Leste from September 19th, 1997 through June 6th, 2024 [@copernicus-chl]. The coastal shelf in-country is very steep and thus the product 4 x 4 km resolution often does not include pixels right along the coast. For Beloi, the nearest pixel east of the reef was selected and the 5 surround pixels of Be'hau (@supptab-pts) were downloaded and visualized using the R programming language v4.4 [@rcoreteam2024].
+Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the E.U. Copernicus Marine Service Information platform (CMEMS) for the approximate locations of Beloi Barrier Reef and Be'hau in Timor-Leste from September 19th, 1997 through June 6th, 2024 [@copernicus-chl]. The coastal shelf in-country is very steep and thus the product 4 x 4 km resolution often does not include pixels right along the coast. For Beloi, the nearest pixel east of the reef was selected and the 5 surround pixels of Be'hau (@supptab-pts) were downloaded and visualized using the R programming language v4.4 [@rcoreteam2024; @kim].
 
 ::: {#supptab-pts}
 | Site   | Longitude | Latitude |
@@ -51,7 +51,7 @@ Mass concentration of chlorophyll-a (chl-a) in seawater was downloaded from the 
 |        | 125.93172 | -8.44054 |
 |        | 125.85619 | -8.44123 |
 
-The xy coordinates used to download chlorophyll a data from the Copernicus Marine Service Information. One point (the easternmost adjacent pixel) was used for Beloi and a polygon was drawn to encompass the 5 closest pixels to Be'hau.
+The xy coordinates used to download chlorophyll-a data from the Copernicus Marine Service Information. One point (the easternmost adjacent pixel) was used for Beloi and a polygon was drawn to encompass the 5 closest pixels to Be'hau.
 :::
 
 ```{r packages}
@@ -432,7 +432,7 @@ Chlorophyll-a data exploration. (a) Merged and filtered data for the chl-a data 
 
 The Southern Oscillation Index (SOI) is one atmospheric measure of the El Niño Southern Oscillation based on the differences in air pressure anomaly between Tahiti and Darwin, Australia. The smoothed SOI time series correspond well with changes in ocean temperatures across the eastern tropical Pacific. The negative phase of the SOI coincides with El Niño conditions i.e., abnormally warm ocean waters across the eastern tropical Pacific. Prolonged periods of positive SOI values coincide with La Niña episodes i.e., abnormally cold ocean waters across the eastern tropical Pacific. The SOI data were downloaded from the US National Oceanic and Atmospheric Administration National Weather Service Climate Prediction Center (@climatepredictioncenterSOI).
 
-SOI values are reported monthly so to match the temporal resolution of the chl-a the outliers were treated the same as the chl-a. Monthly SOI was interpolated to a daily resolution subset to the same period as the chl-a data. Monthly (30 days) and annual (360 days) moving average windows were tested for the SOI (@suppfig-soi-ma).
+SOI values are reported monthly to match the temporal resolution of the chl-a and the outliers were treated the same as the chl-a data. Monthly SOI was interpolated to a daily resolution subset to the same period as the chl-a data. Monthly (30 days) and annual (360 days) moving average windows were tested for the SOI (@suppfig-soi-ma).
 
 ::: {#suppfig-soi-ma}
 ```{python soi moving average}
